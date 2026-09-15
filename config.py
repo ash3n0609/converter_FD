@@ -1,7 +1,7 @@
 import os
 
 # --- Data Configuration ---
-USE_SYNTHETIC_DATA = False  # Set to False when real data is ready
+USE_SYNTHETIC_DATA = True  # Set to False when real data is ready
 DATA_PATH = 'data/simulink_export.csv'  # Path to real data CSV
 
 # Feature and label definitions

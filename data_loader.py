@@ -40,6 +40,8 @@ def generate_synthetic_data(num_samples=1000):
             il[i] += np.random.normal(0, 1.0) # High current ripple
             
     df = pd.DataFrame({
+        'Load Voltage': vout,
+        'Load Current': il,
         'Vin': vin,
         'Vout': vout,
         'IL': il,
