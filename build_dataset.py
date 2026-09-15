@@ -11,17 +11,24 @@ LABEL_MAP = {
     'esr_mild': 1,
     'esr_severe': 2,
     'switch_deg': 3,
-    'gate_deg': 4
+    'gate_deg': 4,
+    'sensor_fault': 5
 }
 
 def extract_label_from_filename(filename):
-    for label_str in LABEL_MAP.keys():
+    for label_str, label_val in LABEL_MAP.items():
         if label_str in filename:
-            return LABEL_MAP[label_str]
+            return label_val
     return None
 
+def extract_unit_from_filename(filename):
+    # e.g., 'unit1_esr_mild_r2.5.csv' -> 'unit1'
+    if filename.startswith('unit'):
+        return filename.split('_')[0]
+    return 'unit1'
+
 def build_dataset():
-    print("=== Building Dataset from Raw Files (Row-by-Row) ===")
+    print("=== Building Dataset from Raw Files (Row-by-Row with Metadata) ===")
     
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
@@ -31,14 +38,13 @@ def build_dataset():
         if not filename.endswith('.csv'):
             continue
             
-        if 'sensor_fault' in filename:
-            print(f"Skipping {filename} (sensor_fault runs excluded).")
-            continue
-            
         label = extract_label_from_filename(filename)
         if label is None:
             print(f"Warning: Could not determine label for {filename}, skipping.")
             continue
+            
+        unit_id = extract_unit_from_filename(filename)
+        run_file = filename.replace('.csv', '')
             
         filepath = os.path.join(RAW_DATA_DIR, filename)
         df = pd.read_csv(filepath)
@@ -48,14 +54,14 @@ def build_dataset():
             print(f"Warning: {filename} missing required columns. Skipping.")
             continue
             
-        # We only keep the raw values as features
+        # Keep features + metadata
         df = df[['Load Voltage', 'Load Current']].copy()
-        
-        # Assign the fault label to every row in this file
+        df['unit_id'] = unit_id
+        df['run_file'] = run_file
         df['fault_label'] = label
         
         dfs.append(df)
-        print(f"Loaded {filename} -> Label: {label}, Rows: {len(df)}")
+        print(f"Loaded {filename} -> Unit: {unit_id}, Label: {label}, Rows: {len(df)}")
         
     print("\nConcatenating all files...")
     final_df = pd.concat(dfs, ignore_index=True)
