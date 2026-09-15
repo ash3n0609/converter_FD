@@ -90,7 +90,7 @@ def export_random_forest_to_onnx(rf_model_path, onnx_model_path, input_dim=2):
     print(f"Loading Random Forest from {rf_model_path}...")
     rf_model = joblib.load(rf_model_path)
 
-    initial_type = [('float_input', FloatTensorType([1, input_dim]))]
+    initial_type = [('float_input', FloatTensorType([1, input_dim]))]  # input_dim = 8 windowed features
     print(f"Converting Random Forest to ONNX via skl2onnx...")
     onx = convert_sklearn(
         rf_model,
@@ -189,6 +189,7 @@ def generate_xcube_ai_test_vectors(num_samples=25):
     1. .npy / .npz format (ST-recommended for automated validation)
     2. .csv format (CubeMX GUI validation)
     3. .h format (C header for bare-metal testing on STM32)
+    Features are the 8 windowed statistics: V_mean, V_std, V_rms, V_p2p, I_mean, I_std, I_rms, I_p2p
     """
     print(f"\nGenerating {num_samples} test vectors for X-CUBE-AI validation...")
     _, X_test, _, y_test = load_and_preprocess_data()
@@ -242,7 +243,8 @@ def generate_xcube_ai_test_vectors(num_samples=25):
         # Inputs array
         f.write("static const float TEST_INPUTS[TEST_VECTOR_COUNT][TEST_FEATURE_DIM] = {\n")
         for sample in test_inputs:
-            f.write(f"    {{{sample[0]:.8f}f, {sample[1]:.8f}f}},\n")
+            row = ", ".join([f"{v:.8f}f" for v in sample])
+            f.write(f"    {{{row}}},\n")
         f.write("};\n\n")
 
         # Expected classes
@@ -268,16 +270,20 @@ def main():
     print("=== Exporting Models and Test Vectors for X-CUBE-AI Deployment ===")
     
     pt_path = os.path.join(config.MODEL_SAVE_DIR, "PyTorch_MLP.pt")
+    # pipeline.py now uses clean_name from "Baseline 2a - Random Forest" -> "Random_Forest"
     rf_path = os.path.join(config.MODEL_SAVE_DIR, "Random_Forest.joblib")
     scaler_path = os.path.join(config.MODEL_SAVE_DIR, "scaler.joblib")
 
+    input_dim = len(config.FEATURE_COLS)  # 8 windowed features
+    print(f"Input dimensions: {input_dim} features | Classes: {config.NUM_CLASSES}")
+
     # 1. Export PyTorch MLP to ONNX
     mlp_onnx_path = os.path.join(config.MODEL_SAVE_DIR, "FaultPredictionMLP.onnx")
-    export_pytorch_to_onnx(pt_path, mlp_onnx_path, input_dim=len(config.FEATURE_COLS), num_classes=config.NUM_CLASSES)
+    export_pytorch_to_onnx(pt_path, mlp_onnx_path, input_dim=input_dim, num_classes=config.NUM_CLASSES)
 
     # 2. Export Random Forest to ONNX (ONNX-ML)
     rf_onnx_path = os.path.join(config.MODEL_SAVE_DIR, "Random_Forest.onnx")
-    export_random_forest_to_onnx(rf_path, rf_onnx_path, input_dim=len(config.FEATURE_COLS))
+    export_random_forest_to_onnx(rf_path, rf_onnx_path, input_dim=input_dim)
 
     # 3. Export Random Forest to standalone C (m2cgen fallback)
     rf_c_path = os.path.join(config.MODEL_SAVE_DIR, "random_forest_model.c")

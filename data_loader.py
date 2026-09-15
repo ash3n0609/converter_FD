@@ -6,7 +6,7 @@ import joblib
 import os
 import config
 
-def generate_synthetic_data(num_samples=1000):
+def generate_synthetic_data(num_samples=6000):
     """
     Generates dummy time-series/tabular data matching the expected schema.
     This allows testing the pipeline before the real Simulink data arrives.

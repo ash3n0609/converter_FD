@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')  # Non-interactive backend — avoids TkAgg MemoryError in headless/terminal environments
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns

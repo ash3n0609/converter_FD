@@ -51,8 +51,9 @@ def test_onnx_integrity(onnx_path):
     # Inspect inputs and outputs
     graph = model.graph
     inputs = [(i.name, [dim.dim_value for dim in i.type.tensor_type.shape.dim]) for i in graph.input]
-    outputs = [(o.name, [dim.dim_value for dim in o.type.tensor_type.shape.dim]) for o in graph.output]
-    print(f"  -> Input nodes: {inputs}")
+    outputs = [(o.name, [dim.dim_value for dim in o.type.tensor_type.shape.dim])
+               for o in graph.output if hasattr(o.type, 'tensor_type') and o.type.tensor_type.HasField('shape')]
+    print(f"  -> Input nodes:  {inputs}")
     print(f"  -> Output nodes: {outputs}")
     return model
 
@@ -182,7 +183,7 @@ def main():
     print("      X-CUBE-AI / STM32 EMBEDDED DEPLOYMENT VERIFICATION SUITE   ")
     print("=================================================================")
 
-    # Paths
+    # Paths — note pipeline now saves as "Random_Forest" (from clean_name logic)
     mlp_onnx = os.path.join(config.MODEL_SAVE_DIR, "FaultPredictionMLP.onnx")
     pt_model = os.path.join(config.MODEL_SAVE_DIR, "PyTorch_MLP.pt")
     rf_onnx = os.path.join(config.MODEL_SAVE_DIR, "Random_Forest.onnx")
