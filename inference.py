@@ -64,16 +64,65 @@ def predict_fault(sample, model_type="Random_Forest"):
     
     return predicted_class, class_name, confidence
 
+def predict_csv_file(csv_path, model_type="SVM_RBF"):
+    """
+    Loads a raw Simulink CSV file, extracts window features,
+    and returns predicted fault classes for the entire file.
+    """
+    import pandas as pd
+    from data_loader import extract_window_features
+    
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"CSV file not found: {csv_path}")
+        
+    print(f"\n--- Running Inference on CSV File: {csv_path} ---")
+    df = pd.read_csv(csv_path)
+    
+    if 'Load Voltage' not in df.columns or 'Load Current' not in df.columns:
+        raise ValueError("CSV must contain 'Load Voltage' and 'Load Current' columns.")
+        
+    # Extract window features
+    features_df = extract_window_features(df, window_size=config.WINDOW_SIZE)
+    X = features_df[config.FEATURE_COLS].values
+    
+    # Scale features
+    scaler = load_scaler()
+    X_scaled = scaler.transform(X)
+    
+    # Load model and predict
+    if model_type == "PyTorch_MLP":
+        model = load_pytorch_model(input_dim=X.shape[1])
+        X_tensor = torch.FloatTensor(X_scaled)
+        with torch.no_grad():
+            outputs = model(X_tensor)
+            _, preds = torch.max(outputs, 1)
+            predictions = preds.numpy()
+    else:
+        model = load_scikit_model(model_type)
+        predictions = model.predict(X_scaled)
+        
+    # Summarize predictions
+    pred_counts = pd.Series(predictions).value_counts().to_dict()
+    print("Prediction Summary across window samples:")
+    for class_id, count in pred_counts.items():
+        name = config.CLASSES.get(class_id, f"Class {class_id}")
+        percentage = (count / len(predictions)) * 100
+        print(f"  - {name:<18}: {count:<5} windows ({percentage:.1f}%)")
+        
+    majority_class_id = pd.Series(predictions).mode()[0]
+    majority_name = config.CLASSES.get(majority_class_id, f"Class {majority_class_id}")
+    print(f"Overall Predicted File Label ({model_type}): {majority_name}")
+    
+    return predictions, majority_name
+
 if __name__ == "__main__":
     print("=== Fault Prediction Inference Demo ===")
     
-    # Dummy sample: [Load Voltage, Load Current]
-    # Let's simulate a random test case
-    dummy_sample = [5.1, 2.0]
+    # Sample 1: Single Window Test Sample
+    dummy_sample = [5.1, 0.05, 5.1002, 0.2, 2.0, 0.02, 2.0001, 0.1]
+    print(f"Input window features ({len(config.FEATURE_COLS)} dimensions): {dummy_sample}")
     
-    print(f"Input features: {dummy_sample}")
-    
-    model_types = ["Random_Forest", "XGBoost", "SVM", "PyTorch_MLP"]
+    model_types = ["Random_Forest", "XGBoost", "SVM_RBF", "PyTorch_MLP"]
     
     for mt in model_types:
         try:
@@ -81,3 +130,9 @@ if __name__ == "__main__":
             print(f"Model: {mt:<15} | Predicted: {pred_name:<20} | Confidence: {conf*100:.2f}%")
         except FileNotFoundError as e:
             print(e)
+            
+    # Sample 2: Test an entire raw CSV file
+    sample_csv = "dataset_v5/unit3_esr_severe_r2.5.csv"
+    if os.path.exists(sample_csv):
+        predict_csv_file(sample_csv, model_type="SVM_RBF")
+
