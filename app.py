@@ -5,26 +5,21 @@ import pandas as pd
 from flask import Flask, render_template, request, jsonify
 import config
 from data_loader import extract_window_features
-from models import (
-    get_stacking_hybrid_model, QuadraticDiscriminantAnalysis, SVC,
-    RandomForestClassifier, XGBClassifier, LogisticRegression, StackingClassifier
-)
+from models import get_stacking_hybrid_model
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
 LOADED_MODEL = None
 SCALER = None
 
-HYBRID_MODEL_KEY = "Hybrid_1_Stacking_Ensemble"
-HYBRID_MODEL_NAME = "Hybrid Model 1: Stacking Ensemble (QDA + Quadratic SVM + RF + XGBoost)"
+HYBRID_MODEL_NAME = "Hybrid 1: Stacking Ensemble (QDA + Quadratic SVM + RF + XGBoost -> Logistic Regression)"
 
 HEALTH_IMPACT = {
     0: 100, # Healthy
     1: 75,  # ESR Mild
     2: 20,  # ESR Severe
     3: 40,  # Switch Deg
-    4: 55,  # Gate Deg
-    5: 80   # Sensor Fault (Measurement anomaly, component intact)
+    4: 55   # Gate Deg
 }
 
 def load_scaler():
@@ -38,15 +33,16 @@ def load_scaler():
 def get_hybrid_model():
     global LOADED_MODEL
     if LOADED_MODEL is None:
-        model_path = os.path.join(config.MODEL_SAVE_DIR, "Hybrid_1_Stacking_Ensemble.joblib")
+        model_path = os.path.join(config.MODEL_SAVE_DIR, f"{config.STACKING_MODEL_NAME}.joblib")
         if os.path.exists(model_path):
             LOADED_MODEL = joblib.load(model_path)
         else:
-            print("Training Hybrid 1 model on synthetic dataset for server initialization...")
+            print("Training Hybrid 1 Stacking Ensemble for server initialization...")
             from data_loader import load_and_preprocess_data
             X_tr, _, y_tr, _ = load_and_preprocess_data()
             LOADED_MODEL = get_stacking_hybrid_model()
             LOADED_MODEL.fit(X_tr, y_tr)
+            os.makedirs(config.MODEL_SAVE_DIR, exist_ok=True)
             joblib.dump(LOADED_MODEL, model_path)
     return LOADED_MODEL
 
@@ -60,8 +56,19 @@ def predict_manual():
         data = request.json or {}
         features = data.get("features", {})
         
-        feature_order = config.FEATURE_COLS
-        sample = [float(features.get(f, 0.0)) for f in feature_order]
+        # Base 8 features
+        raw_names = ['V_mean', 'V_std', 'V_rms', 'V_p2p', 'I_mean', 'I_std', 'I_rms', 'I_p2p']
+        raw_vals = [float(features.get(f, 0.0)) for f in raw_names]
+        
+        v_mean, v_std, v_rms, v_p2p, i_mean, i_std, i_rms, i_p2p = raw_vals
+        eps = 1e-6
+        v_ripple_ratio = float(features.get('V_ripple_ratio', v_p2p / (abs(v_mean) + eps)))
+        i_ripple_ratio = float(features.get('I_ripple_ratio', i_p2p / (abs(i_mean) + eps)))
+        r_apparent = float(features.get('R_apparent', v_mean / (abs(i_mean) + eps)))
+        v_crest_factor = float(features.get('V_crest_factor', v_p2p / (2.0 * np.sqrt(2.0) * v_rms + eps)))
+        p_ratio = float(features.get('P_ratio', (v_mean * i_mean) / (v_rms * i_rms + eps)))
+        
+        sample = raw_vals + [v_ripple_ratio, i_ripple_ratio, r_apparent, v_crest_factor, p_ratio]
         sample_arr = np.array(sample).reshape(1, -1)
         
         scaler = load_scaler()
@@ -100,7 +107,7 @@ def predict_manual():
             "confidence": round(confidence, 2),
             "health_index": health_index,
             "probabilities": probabilities,
-            "input_features": dict(zip(feature_order, sample))
+            "input_features": dict(zip(config.FEATURE_COLS, sample))
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -137,7 +144,7 @@ def upload_csv():
             
         # Extract features over sliding windows
         window_size = config.WINDOW_SIZE
-        features_df = extract_window_features(df, window_size=window_size)
+        features_df = extract_window_features(df, window_size=window_size, skip_transient=True)
         
         if len(features_df) == 0:
             return jsonify({"error": f"Dataset has too few rows ({len(df)}) for window size = {window_size}."}), 400

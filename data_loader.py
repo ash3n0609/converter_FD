@@ -6,57 +6,44 @@ import joblib
 import os
 import config
 
-def generate_synthetic_data(num_samples=1000):
+def generate_synthetic_data(num_samples=2500):
     """
-    Generates dummy time-series/tabular data matching the expected schema.
-    This allows testing the pipeline before the real Simulink data arrives.
+    Generates dummy time-series data matching the raw Simulink schema.
     """
     np.random.seed(config.RANDOM_STATE)
     
-    # Generate baseline normal values
-    vin = np.random.normal(loc=12.0, scale=0.5, size=num_samples)
-    vout = np.random.normal(loc=24.0, scale=0.5, size=num_samples)
-    il = np.random.normal(loc=2.0, scale=0.2, size=num_samples)
-    duty_cycle = np.random.normal(loc=0.5, scale=0.05, size=num_samples)
-    switch_temp = np.random.normal(loc=45.0, scale=5.0, size=num_samples)
-    
-    # Assign labels randomly (0 to NUM_CLASSES-1)
+    # 6 classes matching config.CLASSES
+    v = np.random.normal(loc=5.0, scale=0.05, size=num_samples)
+    i = np.random.normal(loc=1.0, scale=0.02, size=num_samples)
     labels = np.random.randint(0, config.NUM_CLASSES, size=num_samples)
     
-    # Perturb features slightly based on labels to give models something to learn
-    # This is just for demonstration so the models don't just guess randomly
-    for i in range(num_samples):
-        if labels[i] == 1: # Switch open (low current, high temp)
-            il[i] *= 0.1
-            switch_temp[i] += 20
-        elif labels[i] == 2: # Switch short (high current)
-            il[i] *= 3.0
-            vout[i] *= 0.5
-        elif labels[i] == 3: # Diode failure
-            vout[i] *= 0.8
-        elif labels[i] == 4: # Capacitor degradation
-            vout[i] += np.random.normal(0, 3.0) # High ripple/variance
-        elif labels[i] == 5: # Inductor fault
-            il[i] += np.random.normal(0, 1.0) # High current ripple
-            
-    df = pd.DataFrame({
-        'Vin': vin,
-        'Vout': vout,
-        'IL': il,
-        'duty_cycle': duty_cycle,
-        'switch_temp': switch_temp,
+    for idx in range(num_samples):
+        lbl = labels[idx]
+        if lbl == 1: # ESR Mild
+            v[idx] += np.random.normal(0, 0.15)
+        elif lbl == 2: # ESR Severe
+            v[idx] += np.random.normal(0, 0.6)
+        elif lbl == 3: # Switch Deg
+            v[idx] -= 0.4
+        elif lbl == 4: # Gate Deg
+            v[idx] += np.random.normal(0, 0.25)
+            i[idx] += np.random.normal(0, 0.1)
+                
+    return pd.DataFrame({
+        'Load Voltage': v,
+        'Load Current': i,
+        'unit_id': 'unit1',
+        'run_file': 'synthetic_run',
         'fault_label': labels
     })
-    
-    return df
 
-def extract_window_features(df, window_size=config.WINDOW_SIZE):
+def extract_window_features(df, window_size=config.WINDOW_SIZE, skip_transient=True):
     """
-    Extracts time-series window statistics (mean, std, RMS, peak-to-peak)
-    for each simulation run file.
+    Extracts time-series window statistics (mean, std, RMS, peak-to-peak,
+    ripple ratio, apparent resistance, crest factor) for each simulation run file.
+    Filters out cold-start startup transients to eliminate label noise.
     """
-    feature_rows = []
-    
+    dfs = []
     groupby_col = config.RUN_COL if config.RUN_COL in df.columns else None
     
     if groupby_col:
@@ -65,13 +52,22 @@ def extract_window_features(df, window_size=config.WINDOW_SIZE):
         groups = [('all', df)]
         
     for run_id, group_df in groups:
-        v = group_df['Load Voltage'].values
-        i = group_df['Load Current'].values
-        labels = group_df['fault_label'].values if 'fault_label' in group_df.columns else np.zeros(len(group_df), dtype=int)
-        unit_ids = group_df['unit_id'].values if 'unit_id' in group_df.columns else np.repeat('unit1', len(group_df))
-        
         n_samples = len(group_df)
-        n_windows = n_samples // window_size
+        
+        # Discard initial power-up cold-start transient if file is long enough
+        if skip_transient and n_samples > 500:
+            start_idx = int(n_samples * getattr(config, 'TRANSIENT_SKIP_RATIO', 0.08))
+            sub_df = group_df.iloc[start_idx:]
+        else:
+            sub_df = group_df
+            
+        v = sub_df['Load Voltage'].values
+        i = sub_df['Load Current'].values
+        labels = sub_df['fault_label'].values if 'fault_label' in sub_df.columns else np.zeros(len(sub_df), dtype=int)
+        unit_ids = sub_df['unit_id'].values if 'unit_id' in sub_df.columns else np.repeat('unit1', len(sub_df))
+        
+        n_valid = len(v)
+        n_windows = n_valid // window_size
         if n_windows == 0:
             continue
             
@@ -88,19 +84,33 @@ def extract_window_features(df, window_size=config.WINDOW_SIZE):
         i_rms = np.sqrt(np.mean(i_sub**2, axis=1))
         i_p2p = np.ptp(i_sub, axis=1)
         
+        eps = 1e-6
+        v_ripple_ratio = v_p2p / (np.abs(v_mean) + eps)
+        i_ripple_ratio = i_p2p / (np.abs(i_mean) + eps)
+        r_apparent = v_mean / (np.abs(i_mean) + eps)
+        v_crest_factor = v_p2p / (2.0 * np.sqrt(2.0) * v_rms + eps)
+        p_ratio = (v_mean * i_mean) / (v_rms * i_rms + eps)
+        
         lbl_win = labels[::window_size][:n_windows]
         unit_win = unit_ids[::window_size][:n_windows]
         
-        for k in range(n_windows):
-            feature_rows.append({
-                'V_mean': v_mean[k], 'V_std': v_std[k], 'V_rms': v_rms[k], 'V_p2p': v_p2p[k],
-                'I_mean': i_mean[k], 'I_std': i_std[k], 'I_rms': i_rms[k], 'I_p2p': i_p2p[k],
-                'fault_label': lbl_win[k],
-                'unit_id': unit_win[k],
-                'run_file': run_id
-            })
-            
-    return pd.DataFrame(feature_rows)
+        chunk = pd.DataFrame({
+            'V_mean': v_mean, 'V_std': v_std, 'V_rms': v_rms, 'V_p2p': v_p2p,
+            'I_mean': i_mean, 'I_std': i_std, 'I_rms': i_rms, 'I_p2p': i_p2p,
+            'V_ripple_ratio': v_ripple_ratio,
+            'I_ripple_ratio': i_ripple_ratio,
+            'R_apparent': r_apparent,
+            'V_crest_factor': v_crest_factor,
+            'P_ratio': p_ratio,
+            'fault_label': lbl_win,
+            'unit_id': unit_win,
+            'run_file': run_id
+        })
+        dfs.append(chunk)
+        
+    if len(dfs) == 0:
+        return pd.DataFrame(columns=config.FEATURE_COLS)
+    return pd.concat(dfs, ignore_index=True)
 
 def load_and_preprocess_data():
     """
@@ -108,10 +118,16 @@ def load_and_preprocess_data():
     to eliminate temporal data leakage, and normalizes features.
     """
     cached_window_file = 'data/window_features.csv'
+    features_df = None
     if os.path.exists(cached_window_file):
         print(f"Loading cached window features from {cached_window_file}...")
-        features_df = pd.read_csv(cached_window_file)
-    else:
+        cached_df = pd.read_csv(cached_window_file)
+        if all(col in cached_df.columns for col in config.FEATURE_COLS):
+            features_df = cached_df
+        else:
+            print("Cached window features are missing updated feature columns. Recomputing...")
+
+    if features_df is None:
         if config.USE_SYNTHETIC_DATA:
             print("Generating synthetic dataset...")
             df = generate_synthetic_data()
@@ -132,7 +148,13 @@ def load_and_preprocess_data():
         os.makedirs('data', exist_ok=True)
         features_df.to_csv(cached_window_file, index=False)
         
-    print(f"Extracted feature dataset shape: {features_df.shape}")
+    # Exclude any sensor_fault runs (duplicate healthy files removed from taxonomy)
+    if 'fault_label' in features_df.columns:
+        features_df = features_df[features_df['fault_label'].isin(config.CLASSES.keys())].copy()
+    if 'run_file' in features_df.columns:
+        features_df = features_df[~features_df['run_file'].astype(str).str.contains('sensor_fault', case=False, na=False)].copy()
+
+    print(f"Extracted feature dataset shape (after excluding sensor fault duplicates): {features_df.shape}")
     
     # Handle missing values
     features_df.fillna(features_df.mean(numeric_only=True), inplace=True)

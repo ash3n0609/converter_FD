@@ -1,9 +1,14 @@
+"""
+CLI Inference Script for Fault Diagnostics in DC-DC Buck-Boost Converters.
+Uses the primary model: Hybrid 1 - Stacking Ensemble (QDA + Quadratic SVM + RF + XGBoost -> Logistic Regression).
+"""
+
 import os
 import joblib
 import numpy as np
-import torch
+import pandas as pd
 import config
-from models import FaultPredictionMLP
+from data_loader import extract_window_features
 
 def load_scaler():
     """Loads the saved StandardScaler."""
@@ -12,127 +17,118 @@ def load_scaler():
         raise FileNotFoundError(f"Scaler not found at {scaler_path}. Run pipeline.py first.")
     return joblib.load(scaler_path)
 
-def load_scikit_model(model_name="Random_Forest"):
-    """Loads a saved Scikit-Learn or XGBoost model."""
-    model_path = os.path.join(config.MODEL_SAVE_DIR, f"{model_name}.joblib")
+def load_hybrid_model():
+    """Loads the trained Hybrid 1 Stacking Ensemble."""
+    model_path = os.path.join(config.MODEL_SAVE_DIR, f"{config.STACKING_MODEL_NAME}.joblib")
     if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model not found at {model_path}. Run pipeline.py first.")
+        raise FileNotFoundError(f"Stacking model not found at {model_path}. Run pipeline.py first.")
     return joblib.load(model_path)
 
-def load_pytorch_model(input_dim):
-    """Loads the saved PyTorch model."""
-    model_path = os.path.join(config.MODEL_SAVE_DIR, "PyTorch_MLP.pt")
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"PyTorch model not found at {model_path}. Run pipeline.py first.")
-    
-    model = FaultPredictionMLP(input_dim, config.NUM_CLASSES)
-    model.load_state_dict(torch.load(model_path))
-    model.eval()
-    return model
-
-def predict_fault(sample, model_type="Random_Forest"):
+def expand_features_if_needed(sample):
     """
-    Predicts the fault class for a given new sample.
-    sample: A list or 1D numpy array of features: [Vin, Vout, IL, duty_cycle, switch_temp]
+    Expands an 8-element raw window feature vector into the full 12-element
+    feature vector by deriving the invariant power electronic metrics.
     """
-    sample = np.array(sample).reshape(1, -1)
+    sample = np.array(sample, dtype=float).flatten()
+    if len(sample) == len(config.FEATURE_COLS):
+        return sample.reshape(1, -1)
     
-    # Preprocess
-    scaler = load_scaler()
-    sample_scaled = scaler.transform(sample)
-    
-    predicted_class = -1
-    confidence = 0.0
-    
-    if model_type == "PyTorch_MLP":
-        model = load_pytorch_model(input_dim=sample.shape[1])
-        sample_tensor = torch.FloatTensor(sample_scaled)
-        with torch.no_grad():
-            outputs = model(sample_tensor)
-            probabilities = torch.nn.functional.softmax(outputs, dim=1).numpy()[0]
-            predicted_class = np.argmax(probabilities)
-            confidence = probabilities[predicted_class]
-    else:
-        model = load_scikit_model(model_type)
-        predicted_class = model.predict(sample_scaled)[0]
+    if len(sample) == 8:
+        # Expected: V_mean, V_std, V_rms, V_p2p, I_mean, I_std, I_rms, I_p2p
+        v_mean, v_std, v_rms, v_p2p, i_mean, i_std, i_rms, i_p2p = sample
+        eps = 1e-6
+        v_ripple_ratio = v_p2p / (abs(v_mean) + eps)
+        i_ripple_ratio = i_p2p / (abs(i_mean) + eps)
+        r_apparent = v_mean / (abs(i_mean) + eps)
+        v_crest_factor = v_p2p / (2.0 * np.sqrt(2.0) * v_rms + eps)
+        p_ratio = (v_mean * i_mean) / (v_rms * i_rms + eps)
         
-        if hasattr(model, "predict_proba"):
-            probabilities = model.predict_proba(sample_scaled)[0]
-            confidence = probabilities[predicted_class]
-            
-    class_name = config.CLASSES.get(predicted_class, f"Unknown ({predicted_class})")
+        full_sample = np.array([
+            v_mean, v_std, v_rms, v_p2p,
+            i_mean, i_std, i_rms, i_p2p,
+            v_ripple_ratio, i_ripple_ratio, r_apparent, v_crest_factor,
+            p_ratio
+        ])
+        return full_sample.reshape(1, -1)
     
+    raise ValueError(f"Expected 8 or {len(config.FEATURE_COLS)} feature values, got {len(sample)}.")
+
+def predict_fault(sample):
+    """
+    Predicts the fault class for a single feature window vector using Hybrid 1 Stacking Ensemble.
+    """
+    sample_arr = expand_features_if_needed(sample)
+    scaler = load_scaler()
+    sample_scaled = scaler.transform(sample_arr)
+    
+    model = load_hybrid_model()
+    predicted_class = int(model.predict(sample_scaled)[0])
+    
+    confidence = 0.0
+    if hasattr(model, "predict_proba"):
+        probabilities = model.predict_proba(sample_scaled)[0]
+        confidence = float(probabilities[predicted_class])
+        
+    class_name = config.CLASSES.get(predicted_class, f"Class {predicted_class}")
     return predicted_class, class_name, confidence
 
-def predict_csv_file(csv_path, model_type="SVM_RBF"):
+def predict_csv_file(csv_path):
     """
     Loads a raw Simulink CSV file, extracts window features,
-    and returns predicted fault classes for the entire file.
+    and returns predicted fault classes using Hybrid 1 Stacking Ensemble.
     """
-    import pandas as pd
-    from data_loader import extract_window_features
-    
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"CSV file not found: {csv_path}")
         
-    print(f"\n--- Running Inference on CSV File: {csv_path} ---")
+    print(f"\n--- Running Hybrid 1 Stacking Ensemble Inference on: {csv_path} ---")
     df = pd.read_csv(csv_path)
     
     if 'Load Voltage' not in df.columns or 'Load Current' not in df.columns:
         raise ValueError("CSV must contain 'Load Voltage' and 'Load Current' columns.")
         
-    # Extract window features
-    features_df = extract_window_features(df, window_size=config.WINDOW_SIZE)
+    # Extract window features (skipping cold-start transient)
+    features_df = extract_window_features(df, window_size=config.WINDOW_SIZE, skip_transient=True)
     X = features_df[config.FEATURE_COLS].values
     
-    # Scale features
     scaler = load_scaler()
     X_scaled = scaler.transform(X)
     
-    # Load model and predict
-    if model_type == "PyTorch_MLP":
-        model = load_pytorch_model(input_dim=X.shape[1])
-        X_tensor = torch.FloatTensor(X_scaled)
-        with torch.no_grad():
-            outputs = model(X_tensor)
-            _, preds = torch.max(outputs, 1)
-            predictions = preds.numpy()
-    else:
-        model = load_scikit_model(model_type)
-        predictions = model.predict(X_scaled)
-        
-    # Summarize predictions
+    model = load_hybrid_model()
+    predictions = model.predict(X_scaled)
+    
     pred_counts = pd.Series(predictions).value_counts().to_dict()
-    print("Prediction Summary across window samples:")
-    for class_id, count in pred_counts.items():
+    print(f"Total window samples evaluated: {len(predictions)}")
+    print("Class Distribution Breakdown:")
+    for class_id, count in sorted(pred_counts.items()):
         name = config.CLASSES.get(class_id, f"Class {class_id}")
         percentage = (count / len(predictions)) * 100
-        print(f"  - {name:<18}: {count:<5} windows ({percentage:.1f}%)")
+        print(f"  - [{class_id}] {name:<16}: {count:<5} windows ({percentage:.1f}%)")
         
-    majority_class_id = pd.Series(predictions).mode()[0]
+    majority_class_id = int(pd.Series(predictions).mode()[0])
     majority_name = config.CLASSES.get(majority_class_id, f"Class {majority_class_id}")
-    print(f"Overall Predicted File Label ({model_type}): {majority_name}")
+    print(f"\nDominant Diagnosis: {majority_name} (Class ID: {majority_class_id})")
     
     return predictions, majority_name
 
 if __name__ == "__main__":
-    print("=== Fault Prediction Inference Demo ===")
+    print("=" * 65)
+    print(" Fault Prediction CLI - Hybrid 1: Stacking Ensemble")
+    print("=" * 65)
     
-    # Sample 1: Single Window Test Sample
-    dummy_sample = [5.1, 0.05, 5.1002, 0.2, 2.0, 0.02, 2.0001, 0.1]
-    print(f"Input window features ({len(config.FEATURE_COLS)} dimensions): {dummy_sample}")
-    
-    model_types = ["Random_Forest", "XGBoost", "SVM_RBF", "PyTorch_MLP"]
-    
-    for mt in model_types:
-        try:
-            pred_id, pred_name, conf = predict_fault(dummy_sample, model_type=mt)
-            print(f"Model: {mt:<15} | Predicted: {pred_name:<20} | Confidence: {conf*100:.2f}%")
-        except FileNotFoundError as e:
-            print(e)
-            
-    # Sample 2: Test an entire raw CSV file
+    # 1. Single Window Test Sample (Healthy nominal steady state)
+    dummy_sample = [4.973, 0.0045, 4.973, 0.015, 1.428, 0.150, 1.437, 0.392]
+    print(f"\n1. Testing Single Window Feature Vector ({len(dummy_sample)} raw features):")
+    try:
+        pred_id, pred_name, conf = predict_fault(dummy_sample)
+        print(f"   Predicted Diagnosis : {pred_name} (Class {pred_id})")
+        print(f"   Confidence          : {conf * 100:.2f}%")
+    except Exception as e:
+        print(f"   Prediction notice: {e}")
+        
+    # 2. Test full CSV file if available
     sample_csv = "dataset_v5/unit3_esr_severe_r2.5.csv"
     if os.path.exists(sample_csv):
-        predict_csv_file(sample_csv, model_type="SVM_RBF")
-
+        try:
+            predict_csv_file(sample_csv)
+        except Exception as e:
+            print(f"CSV inference notice: {e}")

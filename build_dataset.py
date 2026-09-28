@@ -11,8 +11,7 @@ LABEL_MAP = {
     'esr_mild': 1,
     'esr_severe': 2,
     'switch_deg': 3,
-    'gate_deg': 4,
-    'sensor_fault': 5
+    'gate_deg': 4
 }
 
 def extract_label_from_filename(filename):
