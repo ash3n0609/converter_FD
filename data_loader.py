@@ -71,29 +71,32 @@ def extract_window_features(df, window_size=config.WINDOW_SIZE):
         unit_ids = group_df['unit_id'].values if 'unit_id' in group_df.columns else np.repeat('unit1', len(group_df))
         
         n_samples = len(group_df)
-        for start_idx in range(0, n_samples - window_size + 1, window_size):
-            end_idx = start_idx + window_size
+        n_windows = n_samples // window_size
+        if n_windows == 0:
+            continue
             
-            v_win = v[start_idx:end_idx]
-            i_win = i[start_idx:end_idx]
-            label_win = labels[start_idx]
-            unit_win = unit_ids[start_idx]
-            
-            v_mean = np.mean(v_win)
-            v_std = np.std(v_win)
-            v_rms = np.sqrt(np.mean(v_win**2))
-            v_p2p = np.ptp(v_win)
-            
-            i_mean = np.mean(i_win)
-            i_std = np.std(i_win)
-            i_rms = np.sqrt(np.mean(i_win**2))
-            i_p2p = np.ptp(i_win)
-            
+        v_sub = v[:n_windows * window_size].reshape(n_windows, window_size)
+        i_sub = i[:n_windows * window_size].reshape(n_windows, window_size)
+        
+        v_mean = np.mean(v_sub, axis=1)
+        v_std = np.std(v_sub, axis=1)
+        v_rms = np.sqrt(np.mean(v_sub**2, axis=1))
+        v_p2p = np.ptp(v_sub, axis=1)
+        
+        i_mean = np.mean(i_sub, axis=1)
+        i_std = np.std(i_sub, axis=1)
+        i_rms = np.sqrt(np.mean(i_sub**2, axis=1))
+        i_p2p = np.ptp(i_sub, axis=1)
+        
+        lbl_win = labels[::window_size][:n_windows]
+        unit_win = unit_ids[::window_size][:n_windows]
+        
+        for k in range(n_windows):
             feature_rows.append({
-                'V_mean': v_mean, 'V_std': v_std, 'V_rms': v_rms, 'V_p2p': v_p2p,
-                'I_mean': i_mean, 'I_std': i_std, 'I_rms': i_rms, 'I_p2p': i_p2p,
-                'fault_label': label_win,
-                'unit_id': unit_win,
+                'V_mean': v_mean[k], 'V_std': v_std[k], 'V_rms': v_rms[k], 'V_p2p': v_p2p[k],
+                'I_mean': i_mean[k], 'I_std': i_std[k], 'I_rms': i_rms[k], 'I_p2p': i_p2p[k],
+                'fault_label': lbl_win[k],
+                'unit_id': unit_win[k],
                 'run_file': run_id
             })
             
@@ -104,23 +107,30 @@ def load_and_preprocess_data():
     Loads data, extracts windowed features, performs Group Split by simulation unit/run
     to eliminate temporal data leakage, and normalizes features.
     """
-    if config.USE_SYNTHETIC_DATA:
-        print("Generating synthetic dataset...")
-        df = generate_synthetic_data()
+    cached_window_file = 'data/window_features.csv'
+    if os.path.exists(cached_window_file):
+        print(f"Loading cached window features from {cached_window_file}...")
+        features_df = pd.read_csv(cached_window_file)
     else:
-        print(f"Loading real data from {config.DATA_PATH}...")
-        if not os.path.exists(config.DATA_PATH):
-            raise FileNotFoundError(f"Data file {config.DATA_PATH} not found.")
-        df = pd.read_csv(config.DATA_PATH)
-        
-    print(f"Raw dataframe shape: {df.shape}")
-    
-    # Check if raw features exist or if already windowed
-    if 'Load Voltage' in df.columns and 'Load Current' in df.columns:
-        print(f"Extracting window features (Window Size = {config.WINDOW_SIZE})...")
-        features_df = extract_window_features(df, window_size=config.WINDOW_SIZE)
-    else:
-        features_df = df
+        if config.USE_SYNTHETIC_DATA:
+            print("Generating synthetic dataset...")
+            df = generate_synthetic_data()
+        else:
+            print(f"Loading real data from {config.DATA_PATH}...")
+            if not os.path.exists(config.DATA_PATH):
+                raise FileNotFoundError(f"Data file {config.DATA_PATH} not found.")
+            df = pd.read_csv(config.DATA_PATH)
+            
+        print(f"Raw dataframe shape: {df.shape}")
+        if 'Load Voltage' in df.columns and 'Load Current' in df.columns:
+            print(f"Extracting window features (Window Size = {config.WINDOW_SIZE})...")
+            features_df = extract_window_features(df, window_size=config.WINDOW_SIZE)
+        else:
+            features_df = df
+            
+        print(f"Saving extracted window features to {cached_window_file}...")
+        os.makedirs('data', exist_ok=True)
+        features_df.to_csv(cached_window_file, index=False)
         
     print(f"Extracted feature dataset shape: {features_df.shape}")
     
