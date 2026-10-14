@@ -12,7 +12,7 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 LOADED_MODEL = None
 SCALER = None
 
-HYBRID_MODEL_NAME = "Hybrid 1: Stacking Ensemble (QDA + Quadratic SVM + RF + XGBoost -> Logistic Regression)"
+HYBRID_MODEL_NAME = "Hybrid Stacking Ensemble (LR + Calibrated Linear SVC + Regularized RF + XGBoost)"
 
 HEALTH_IMPACT = {
     0: 100, # Healthy
@@ -182,9 +182,30 @@ def upload_csv():
                 "percentage": pct
             })
             
-        overall_health_index = round(total_health_score / total_windows, 1)
-        majority_class_id = int(pred_series.mode()[0])
-        majority_class_name = config.CLASSES.get(majority_class_id, f"Class {majority_class_id}")
+        # In power electronics, if hardware degradation (ESR, Switch, Gate) persists in >= 10% of windows,
+        # prioritize that fault in primary diagnosis so regulated steady-state windows do not mask active degradation.
+        fault_counts = {cls_id: cnt for cls_id, cnt in counts.items() if cls_id != 0}
+        if fault_counts:
+            top_fault_id = max(fault_counts, key=fault_counts.get)
+            top_fault_cnt = fault_counts[top_fault_id]
+            if (top_fault_cnt / total_windows) >= 0.10:
+                diagnosis_class_id = int(top_fault_id)
+            else:
+                diagnosis_class_id = int(pred_series.mode()[0])
+        else:
+            diagnosis_class_id = int(pred_series.mode()[0])
+
+        diagnosis_class_name = config.CLASSES.get(diagnosis_class_id, f"Class {diagnosis_class_id}")
+
+        # If a critical component fault is actively diagnosed, adjust overall health score accordingly
+        if diagnosis_class_id != 0:
+            fault_base_health = HEALTH_IMPACT.get(diagnosis_class_id, 50)
+            overall_health_index = min(round(total_health_score / total_windows, 1), fault_base_health)
+        else:
+            overall_health_index = round(total_health_score / total_windows, 1)
+
+        majority_class_id = diagnosis_class_id
+        majority_class_name = diagnosis_class_name
         
         # Prepare window timeline data for graphing
         timeline = []

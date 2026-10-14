@@ -1,6 +1,6 @@
 """
 CLI Inference Script for Fault Diagnostics in DC-DC Buck-Boost Converters.
-Uses the primary model: Hybrid 1 - Stacking Ensemble (QDA + Quadratic SVM + RF + XGBoost -> Logistic Regression).
+Uses the primary model: Hybrid 1 - Stacking Ensemble (Linear Margin SVM + Multiclass LR + Regularized RF + XGBoost).
 """
 
 import os

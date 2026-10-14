@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,291 +12,571 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            /* Deep Dark Palette */
-            --bg-primary: #0a0e17;
-            --bg-secondary: #0f1520;
-            --bg-elevated: #141b2d;
-            --bg-card: rgba(20, 27, 45, 0.65);
-            --bg-card-hover: rgba(25, 34, 56, 0.75);
-            --bg-glass: rgba(255, 255, 255, 0.03);
-            --bg-input: rgba(255, 255, 255, 0.04);
+        /* ============================================================
+           DESIGN TOKENS — DARK THEME (default)
+           ============================================================ */
+        :root,
+        [data-theme="dark"] {
+            --bg-body: #0f1117;
+            --bg-sidebar: #13151c;
+            --bg-sidebar-hover: rgba(255,255,255,0.04);
+            --bg-main: #161822;
+            --bg-card: rgba(22, 26, 40, 0.72);
+            --bg-card-solid: #181c2c;
+            --bg-elevated: #1c2033;
+            --bg-input: rgba(255,255,255,0.04);
+            --bg-glass: rgba(255,255,255,0.02);
+            --bg-badge: rgba(255,255,255,0.04);
 
-            --border-primary: rgba(255, 255, 255, 0.06);
-            --border-glow: rgba(99, 179, 237, 0.15);
-            --border-focus: rgba(99, 179, 237, 0.4);
+            --border-primary: rgba(255,255,255,0.06);
+            --border-hover: rgba(255,255,255,0.10);
+            --border-focus: rgba(108,99,255,0.45);
 
-            --accent: #60a5fa;
-            --accent-glow: rgba(96, 165, 250, 0.15);
-            --accent-bright: #93c5fd;
-            --accent-dim: #3b82f6;
+            --accent: #6c63ff;
+            --accent-light: #8b83ff;
+            --accent-bg: rgba(108,99,255,0.10);
+            --accent-glow: rgba(108,99,255,0.18);
 
             --text-primary: #e8edf5;
             --text-secondary: #8b95a8;
             --text-muted: #5a6478;
             --text-bright: #ffffff;
 
-            /* Status System */
+            /* Status */
             --healthy: #34d399;
-            --healthy-bg: rgba(52, 211, 153, 0.08);
-            --healthy-border: rgba(52, 211, 153, 0.2);
-            --healthy-glow: rgba(52, 211, 153, 0.12);
-
+            --healthy-bg: rgba(52,211,153,0.08);
+            --healthy-border: rgba(52,211,153,0.20);
             --esr-mild: #fbbf24;
-            --esr-mild-bg: rgba(251, 191, 36, 0.08);
-            --esr-mild-border: rgba(251, 191, 36, 0.2);
-
+            --esr-mild-bg: rgba(251,191,36,0.08);
+            --esr-mild-border: rgba(251,191,36,0.20);
             --esr-severe: #f87171;
-            --esr-severe-bg: rgba(248, 113, 113, 0.08);
-            --esr-severe-border: rgba(248, 113, 113, 0.2);
-
+            --esr-severe-bg: rgba(248,113,113,0.08);
+            --esr-severe-border: rgba(248,113,113,0.20);
             --switch-deg: #a78bfa;
-            --switch-deg-bg: rgba(167, 139, 250, 0.08);
-            --switch-deg-border: rgba(167, 139, 250, 0.2);
-
+            --switch-deg-bg: rgba(167,139,250,0.08);
+            --switch-deg-border: rgba(167,139,250,0.20);
             --gate-deg: #22d3ee;
-            --gate-deg-bg: rgba(34, 211, 238, 0.08);
-            --gate-deg-border: rgba(34, 211, 238, 0.2);
+            --gate-deg-bg: rgba(34,211,238,0.08);
+            --gate-deg-border: rgba(34,211,238,0.20);
 
-            --sensor-fault: #fb7185;
-            --sensor-fault-bg: rgba(251, 113, 133, 0.08);
-            --sensor-fault-border: rgba(251, 113, 133, 0.2);
-
-            /* Sizing */
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.25);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.35);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
             --radius-xl: 20px;
+
+            --sidebar-width: 260px;
+            --topbar-height: 64px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        /* ============================================================
+           LIGHT THEME OVERRIDES
+           ============================================================ */
+        [data-theme="light"] {
+            --bg-body: #f3f4f8;
+            --bg-sidebar: #ffffff;
+            --bg-sidebar-hover: rgba(108,99,255,0.05);
+            --bg-main: #f3f4f8;
+            --bg-card: rgba(255,255,255,0.85);
+            --bg-card-solid: #ffffff;
+            --bg-elevated: #ffffff;
+            --bg-input: rgba(0,0,0,0.03);
+            --bg-glass: rgba(0,0,0,0.02);
+            --bg-badge: rgba(0,0,0,0.04);
+
+            --border-primary: rgba(0,0,0,0.08);
+            --border-hover: rgba(0,0,0,0.12);
+            --border-focus: rgba(108,99,255,0.45);
+
+            --accent: #6c63ff;
+            --accent-light: #5a52e0;
+            --accent-bg: rgba(108,99,255,0.08);
+            --accent-glow: rgba(108,99,255,0.12);
+
+            --text-primary: #1a1d2e;
+            --text-secondary: #5f6880;
+            --text-muted: #9098ab;
+            --text-bright: #0f1117;
+
+            --healthy: #059669;
+            --healthy-bg: rgba(5,150,105,0.08);
+            --healthy-border: rgba(5,150,105,0.20);
+            --esr-mild: #d97706;
+            --esr-mild-bg: rgba(217,119,6,0.08);
+            --esr-mild-border: rgba(217,119,6,0.20);
+            --esr-severe: #dc2626;
+            --esr-severe-bg: rgba(220,38,38,0.08);
+            --esr-severe-border: rgba(220,38,38,0.20);
+            --switch-deg: #7c3aed;
+            --switch-deg-bg: rgba(124,58,237,0.08);
+            --switch-deg-border: rgba(124,58,237,0.20);
+            --gate-deg: #0891b2;
+            --gate-deg-bg: rgba(8,145,178,0.08);
+            --gate-deg-border: rgba(8,145,178,0.20);
+
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
         }
+
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg-primary);
+            background: var(--bg-body);
             color: var(--text-primary);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
+            display: flex;
         }
 
-        /* Animated gradient mesh background */
-        body::before {
-            content: '';
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(ellipse 80% 60% at 10% 10%, rgba(59, 130, 246, 0.07) 0%, transparent 55%),
-                radial-gradient(ellipse 60% 80% at 90% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 55%),
-                radial-gradient(ellipse 50% 50% at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-            animation: gradientShift 20s ease-in-out infinite alternate;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-primary);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
         }
 
-        @keyframes gradientShift {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        /* Noise texture overlay */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem 3rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ---- HEADER ---- */
-        header {
+        .sidebar-brand {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.75rem;
+            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border-primary);
-            position: relative;
         }
 
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 120px;
-            height: 1px;
-            background: linear-gradient(90deg, var(--accent), transparent);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .brand-icon {
-            width: 44px;
-            height: 44px;
+        .sidebar-brand-icon {
+            width: 38px;
+            height: 38px;
             border-radius: var(--radius-md);
-            background: linear-gradient(135deg, var(--accent-dim), rgba(139, 92, 246, 0.6));
+            background: linear-gradient(135deg, #6c63ff, #a78bfa);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ffffff;
-            box-shadow: 0 0 20px rgba(96, 165, 250, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
-            position: relative;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 2px 12px rgba(108,99,255,0.25);
         }
 
-        .brand-icon::after {
+        .sidebar-brand-text {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+
+        .sidebar-brand-version {
+            font-size: 0.65rem;
+            font-weight: 500;
+            background: var(--accent-bg);
+            color: var(--accent);
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        /* Sidebar Search */
+        .sidebar-search {
+            padding: 1rem 1.25rem;
+        }
+
+        .search-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 0.75rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input-wrap:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .search-input-wrap svg {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .search-input-wrap input {
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 0.82rem;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .search-input-wrap input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-shortcut {
+            font-size: 0.65rem;
+            background: var(--bg-badge);
+            color: var(--text-muted);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+        }
+
+        /* Sidebar Nav */
+        .sidebar-section-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            padding: 1rem 1.5rem 0.5rem;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0 0.75rem;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 2px;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.85rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(.4,0,.2,1);
+            position: relative;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .sidebar-nav-link:hover {
+            background: var(--bg-sidebar-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav-link.active {
+            background: var(--accent-bg);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .sidebar-nav-link.active::before {
             content: '';
             position: absolute;
-            inset: -2px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), transparent, rgba(139, 92, 246, 0.2));
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            border-radius: 0 3px 3px 0;
+            background: var(--accent);
         }
 
-        .brand:hover .brand-icon::after {
+        .sidebar-nav-link svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-nav-link.active svg {
             opacity: 1;
         }
 
-        .brand-text h1 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--text-bright);
-            line-height: 1.2;
+        /* Sidebar Bottom */
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 0 0.75rem 1rem;
+            border-top: 1px solid var(--border-primary);
+            padding-top: 0.75rem;
         }
 
-        .brand-text p {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-top: 0.2rem;
-            font-weight: 400;
-            letter-spacing: 0.01em;
+        /* ============================================================
+           MAIN AREA
+           ============================================================ */
+        .main-area {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .header-right {
+        /* Top Bar */
+        .topbar {
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border-primary);
+            background: var(--bg-sidebar);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+        }
+
+        .topbar-left {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
+        .topbar-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: -0.02em;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-primary);
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s, border-color 0.3s;
+            display: flex;
+            align-items: center;
+            padding: 0 3px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+        }
+
+        .theme-toggle-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        [data-theme="light"] .theme-toggle-thumb {
+            transform: translateX(18px);
+        }
+
+        .theme-toggle-thumb svg {
+            width: 12px;
+            height: 12px;
+            color: #fff;
+        }
+
+        /* Status Pill */
         .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.85rem;
+            gap: 0.45rem;
+            padding: 0.35rem 0.85rem;
             background: var(--healthy-bg);
             border: 1px solid var(--healthy-border);
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 500;
             color: var(--healthy);
-            backdrop-filter: blur(8px);
         }
 
         .status-dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background-color: var(--healthy);
-            box-shadow: 0 0 8px var(--healthy-glow);
+            background: var(--healthy);
             animation: pulse 2s ease-in-out infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--healthy-glow); }
-            50% { opacity: 0.6; box-shadow: 0 0 16px var(--healthy-glow); }
+            0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(52,211,153,0.3); }
+            50% { opacity: 0.5; box-shadow: 0 0 14px rgba(52,211,153,0.5); }
         }
 
-        /* ---- NAVIGATION ---- */
-        .nav-segments {
+        /* Export Button */
+        .btn-export {
             display: inline-flex;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-md);
-            padding: 4px;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(12px);
-        }
-
-        .nav-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 0.55rem 1.3rem;
-            font-size: 0.82rem;
-            font-weight: 500;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            letter-spacing: -0.01em;
-        }
-
-        .nav-btn:hover {
-            color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .nav-btn.active {
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 1rem;
             background: var(--accent);
-            color: #ffffff;
-            box-shadow: 0 2px 12px rgba(96, 165, 250, 0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 12px rgba(108,99,255,0.25);
         }
 
-        /* ---- CARD SYSTEM ---- */
+        .btn-export:hover {
+            box-shadow: 0 4px 20px rgba(108,99,255,0.4);
+            transform: translateY(-1px);
+        }
+
+        /* ============================================================
+           PAGE CONTENT
+           ============================================================ */
+        .page-content {
+            padding: 1.75rem 2rem 3rem;
+            flex: 1;
+        }
+
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+            animation: fadeIn 0.35s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           STATS CARDS ROW (top row like Lytic Pro)
+           ============================================================ */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card-solid);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.35rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card-icon {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-card-icon-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-bg);
+            color: var(--accent);
+        }
+
+        .stat-card-icon-circle svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .stat-card-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-card-value {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+        }
+
+        .stat-card-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-top: 0.35rem;
+        }
+
+        .stat-card-change.positive { color: var(--healthy); }
+        .stat-card-change.negative { color: var(--esr-severe); }
+
+        .stat-card-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
         .card {
-            background: var(--bg-card);
+            background: var(--bg-card-solid);
             border: 1px solid var(--border-primary);
             border-radius: var(--radius-lg);
             padding: 1.75rem;
             margin-bottom: 1.5rem;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-card);
             transition: border-color 0.3s, box-shadow 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
-        }
-
         .card:hover {
-            border-color: var(--border-glow);
+            border-color: var(--border-hover);
         }
 
         .card-header {
@@ -308,42 +588,235 @@
 
         .card-title {
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-bright);
             letter-spacing: -0.01em;
         }
 
-        .card-desc {
+        .card-subtitle {
             font-size: 0.78rem;
             color: var(--text-muted);
             margin-top: 0.2rem;
         }
 
-        /* ---- UPLOAD AREA ---- */
+        .card-menu-dots {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .card-menu-dots:hover {
+            background: var(--bg-input);
+        }
+
+        /* Two-column layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2-equal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ============================================================
+           CHART AREAS
+           ============================================================ */
+        .chart-area {
+            height: 280px;
+            position: relative;
+        }
+
+        .chart-area canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* ============================================================
+           DONUT / RING METRIC
+           ============================================================ */
+        .ring-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        .ring-svg {
+            width: 160px;
+            height: 160px;
+            transform: rotate(-90deg);
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: var(--border-primary);
+            stroke-width: 8;
+        }
+
+        .ring-fill {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+        }
+
+        .ring-label {
+            text-align: center;
+            margin-top: -100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ring-label-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .ring-label-text {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        /* Progress row under ring */
+        .metric-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-row-label {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .metric-row-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .metric-row-value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .metric-bar-wrap {
+            width: 80px;
+            height: 6px;
+            background: var(--border-primary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--accent);
+            transition: width 0.8s cubic-bezier(.4,0,.2,1);
+        }
+
+        .metric-bar-pct {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            min-width: 32px;
+            text-align: right;
+        }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-primary);
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            letter-spacing: 0.06em;
+        }
+
+        td {
+            padding: 0.75rem 0.85rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            font-size: 0.82rem;
+        }
+
+        tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-sidebar-hover);
+        }
+
+        td strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           UPLOAD BOX
+           ============================================================ */
         .upload-box {
-            border: 1px dashed rgba(255, 255, 255, 0.08);
+            border: 2px dashed var(--border-primary);
             border-radius: var(--radius-lg);
             padding: 3rem 2rem;
             text-align: center;
-            background: linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 100%);
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(.4,0,.2,1);
             cursor: pointer;
             position: relative;
         }
 
-        .upload-box:hover, .upload-box.dragover {
+        .upload-box:hover,
+        .upload-box.dragover {
             border-color: var(--accent);
-            background: linear-gradient(180deg, var(--accent-glow) 0%, transparent 60%);
-            box-shadow: 0 0 40px rgba(96, 165, 250, 0.05);
+            background: var(--accent-bg);
         }
 
-        .upload-icon-wrapper {
+        .upload-icon-wrap {
             width: 56px;
             height: 56px;
             margin: 0 auto 1.1rem;
             border-radius: var(--radius-md);
-            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(139, 92, 246, 0.08));
-            border: 1px solid rgba(96, 165, 250, 0.15);
+            background: var(--accent-bg);
+            border: 1px solid rgba(108,99,255,0.15);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -351,9 +824,9 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .upload-box:hover .upload-icon-wrapper {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
+        .upload-box:hover .upload-icon-wrap {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(108,99,255,0.15);
         }
 
         .upload-title {
@@ -369,13 +842,9 @@
             margin-bottom: 1.5rem;
         }
 
-        .btn-group {
-            display: inline-flex;
-            gap: 0.65rem;
-            align-items: center;
-        }
-
-        /* ---- BUTTONS ---- */
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -386,112 +855,55 @@
             font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(.4,0,.2,1);
             text-decoration: none;
             letter-spacing: -0.01em;
+            font-family: inherit;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-dim), #6366f1);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-            box-shadow: 0 2px 12px rgba(96, 165, 250, 0.2);
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none;
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(108,99,255,0.25);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 4px 20px rgba(96, 165, 250, 0.35);
+            box-shadow: 0 4px 20px rgba(108,99,255,0.4);
             transform: translateY(-1px);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+        .btn-primary:active { transform: translateY(0); }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--bg-input);
             border: 1px solid var(--border-primary);
             color: var(--text-secondary);
-            backdrop-filter: blur(8px);
         }
 
         .btn-secondary:hover {
-            border-color: rgba(255, 255, 255, 0.12);
+            border-color: var(--border-hover);
             color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--bg-sidebar-hover);
         }
 
-        /* ---- METRICS GRID ---- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.75rem;
+        .btn-group {
+            display: inline-flex;
+            gap: 0.65rem;
+            align-items: center;
         }
 
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-md);
-            padding: 1.15rem;
-            transition: border-color 0.3s, background 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .stat-card:hover {
-            border-color: var(--border-glow);
-            background: rgba(255, 255, 255, 0.035);
-        }
-
-        .stat-card:hover::after {
-            opacity: 1;
-        }
-
-        .stat-label {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-bright);
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: -0.02em;
-        }
-
-        /* ---- DIAGNOSIS BADGES ---- */
+        /* ============================================================
+           BADGES
+           ============================================================ */
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
             padding: 0.3rem 0.7rem;
             border-radius: var(--radius-sm);
             font-size: 0.8rem;
             font-weight: 600;
-            letter-spacing: -0.01em;
         }
 
         .badge-Healthy { background: var(--healthy-bg); color: var(--healthy); border: 1px solid var(--healthy-border); }
@@ -500,15 +912,16 @@
         .badge-Switch-Deg { background: var(--switch-deg-bg); color: var(--switch-deg); border: 1px solid var(--switch-deg-border); }
         .badge-Gate-Deg { background: var(--gate-deg-bg); color: var(--gate-deg); border: 1px solid var(--gate-deg-border); }
 
-        /* Large badge variant for primary diagnosis */
         .badge-lg {
             padding: 0.4rem 0.9rem;
             font-size: 0.88rem;
         }
 
-        /* ---- PROGRESS BARS ---- */
+        /* ============================================================
+           PROGRESS BARS
+           ============================================================ */
         .progress-bar-bg {
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--border-primary);
             border-radius: 9999px;
             height: 6px;
             overflow: hidden;
@@ -518,92 +931,21 @@
         .progress-bar-fill {
             height: 100%;
             border-radius: 9999px;
-            background: linear-gradient(90deg, var(--accent-dim), var(--accent));
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            transition: width 0.6s cubic-bezier(.4,0,.2,1);
         }
 
-        .progress-bar-fill::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 20px;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2));
-            border-radius: 9999px;
-        }
-
-        /* ---- TABLE ---- */
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.82rem;
-        }
-
-        th {
-            text-align: left;
-            padding: 0.75rem 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            border-bottom: 1px solid var(--border-primary);
-            text-transform: uppercase;
-            font-size: 0.68rem;
-            letter-spacing: 0.06em;
-        }
-
-        td {
-            padding: 0.75rem 0.85rem;
-            color: var(--text-secondary);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-        }
-
-        tr {
-            transition: background 0.2s;
-        }
-
-        tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        td strong {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        /* ---- CHART ---- */
-        .chart-box {
-            height: 260px;
-            position: relative;
-            margin-top: 1rem;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.01);
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        /* ---- SLIDER CONTROLS ---- */
+        /* ============================================================
+           SLIDER CONTROLS
+           ============================================================ */
         .slider-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
 
-        @media (max-width: 768px) {
-            .slider-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .control-group {
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--bg-input);
             border: 1px solid var(--border-primary);
             border-radius: var(--radius-md);
             padding: 1.1rem;
@@ -611,7 +953,7 @@
         }
 
         .control-group:hover {
-            border-color: var(--border-glow);
+            border-color: var(--border-hover);
         }
 
         .control-header {
@@ -646,12 +988,11 @@
             box-shadow: 0 0 0 3px var(--accent-glow);
         }
 
-        /* Custom range slider */
         input[type="range"] {
             width: 100%;
             height: 4px;
             border-radius: 2px;
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--border-primary);
             appearance: none;
             -webkit-appearance: none;
             cursor: pointer;
@@ -665,13 +1006,12 @@
             border-radius: 50%;
             background: var(--accent);
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
-            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 0 10px rgba(108,99,255,0.3);
+            transition: transform 0.15s;
         }
 
         input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.25);
-            box-shadow: 0 0 16px rgba(96, 165, 250, 0.5);
         }
 
         input[type="range"]::-moz-range-thumb {
@@ -681,15 +1021,16 @@
             background: var(--accent);
             cursor: pointer;
             border: none;
-            box-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
         }
 
-        /* ---- SINGLE RESULT BOX ---- */
+        /* ============================================================
+           SINGLE RESULT BOX
+           ============================================================ */
         .single-result {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--bg-input);
             border: 1px solid var(--border-primary);
             border-radius: var(--radius-md);
             padding: 1.35rem;
@@ -698,7 +1039,7 @@
         }
 
         .single-result:hover {
-            border-color: var(--border-glow);
+            border-color: var(--border-hover);
         }
 
         .single-meta {
@@ -712,9 +1053,11 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* ---- SECTION DIVIDERS ---- */
+        /* ============================================================
+           SECTION DIVIDERS
+           ============================================================ */
         .section-divider {
-            margin: 2rem 0 1.5rem;
+            margin: 2rem 0 1rem;
             position: relative;
         }
 
@@ -733,7 +1076,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: var(--bg-primary);
+            background: var(--bg-card-solid);
             padding-right: 1rem;
             font-size: 0.72rem;
             font-weight: 600;
@@ -742,13 +1085,15 @@
             letter-spacing: 0.06em;
         }
 
-        /* ---- LOADING ANIMATION ---- */
+        /* ============================================================
+           LOADING OVERLAY
+           ============================================================ */
         .loading-overlay {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 1000;
-            background: rgba(10, 14, 23, 0.85);
+            background: rgba(0,0,0,0.65);
             backdrop-filter: blur(12px);
             align-items: center;
             justify-content: center;
@@ -756,22 +1101,18 @@
             gap: 1.25rem;
         }
 
-        .loading-overlay.visible {
-            display: flex;
-        }
+        .loading-overlay.visible { display: flex; }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.06);
+            border: 3px solid var(--border-primary);
             border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .loading-text {
             font-size: 0.85rem;
@@ -779,17 +1120,9 @@
             font-weight: 500;
         }
 
-        /* ---- FADE-IN ANIMATION ---- */
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ---- TOAST NOTIFICATION ---- */
+        /* ============================================================
+           TOAST
+           ============================================================ */
         .toast {
             position: fixed;
             bottom: 1.5rem;
@@ -798,8 +1131,7 @@
             border: 1px solid var(--border-primary);
             border-radius: var(--radius-md);
             padding: 0.85rem 1.25rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(16px);
+            box-shadow: var(--shadow-lg);
             z-index: 2000;
             font-size: 0.82rem;
             color: var(--text-primary);
@@ -807,77 +1139,137 @@
             align-items: center;
             gap: 0.65rem;
             transform: translateY(120%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.35s cubic-bezier(.4,0,.2,1);
         }
 
-        .toast.visible {
-            transform: translateY(0);
+        .toast.visible { transform: translateY(0); }
+
+        .toast-icon { display: flex; align-items: center; color: var(--accent); }
+        .toast-error .toast-icon { color: var(--esr-severe); }
+
+        /* ============================================================
+           SETTINGS PAGE
+           ============================================================ */
+        .settings-section {
+            max-width: 640px;
         }
 
-        .toast-icon {
-            display: flex;
-            align-items: center;
-            color: var(--accent);
-        }
-
-        .toast-error .toast-icon {
-            color: var(--esr-severe);
-        }
-
-        /* ---- FOOTER ---- */
-        footer {
-            margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border-primary);
+        .settings-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.72rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .settings-row:last-child { border-bottom: none; }
+
+        .settings-row-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .settings-row-desc {
+            font-size: 0.78rem;
             color: var(--text-muted);
+            margin-top: 0.2rem;
         }
 
-        .footer-stack {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        /* Toggle switch for settings */
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: var(--border-primary);
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s;
+            flex-shrink: 0;
         }
 
-        .footer-dot {
-            width: 3px;
-            height: 3px;
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-switch-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: var(--text-muted);
+            background: #fff;
+            transition: transform 0.3s;
         }
 
-        /* ---- RESPONSIVE ---- */
-        @media (max-width: 600px) {
-            .container {
-                padding: 1.25rem 1rem 2rem;
+        .toggle-switch.active .toggle-switch-thumb {
+            transform: translateX(20px);
+        }
+
+        /* ============================================================
+           MOBILE SIDEBAR TOGGLE
+           ============================================================ */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 90;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
             }
 
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+            .sidebar.open {
+                transform: translateX(0);
             }
 
-            .nav-segments {
-                width: 100%;
+            .sidebar-overlay.open {
+                display: block;
             }
 
-            .nav-btn {
-                flex: 1;
-                text-align: center;
-                font-size: 0.78rem;
-                padding: 0.5rem 0.5rem;
+            .main-area {
+                margin-left: 0;
             }
 
-            .stats-grid {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .stats-row {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
+            }
+
+            .grid-2, .grid-2-equal {
+                grid-template-columns: 1fr;
             }
 
             .slider-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-content {
+                padding: 1.25rem 1rem 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
                 grid-template-columns: 1fr;
             }
 
@@ -894,12 +1286,6 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 1rem;
-            }
-
-            footer {
-                flex-direction: column;
-                gap: 0.75rem;
-                text-align: center;
             }
         }
     </style>
@@ -923,178 +1309,470 @@
         <span id="toast-msg">Notification</span>
     </div>
 
-    <div class="container">
-        <!-- ===== HEADER ===== -->
-        <header>
-            <div class="brand">
-                <div class="brand-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-                    </svg>
-                </div>
-                <div class="brand-text">
-                    <h1>Converter Diagnostics</h1>
-                    <p>DC-DC Buck-Boost • Stacking Ensemble (QDA + Quad SVM + RF + XGBoost)</p>
-                </div>
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
             </div>
-            <div class="header-right">
+            <span class="sidebar-brand-text">Converter Dx</span>
+            <span class="sidebar-brand-version">v2.0</span>
+        </div>
+
+        <div class="sidebar-search">
+            <div class="search-input-wrap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" placeholder="Search..." id="search-input">
+                <span class="search-shortcut">⌘K</span>
+            </div>
+        </div>
+
+        <div class="sidebar-section-label">Menu</div>
+        <ul class="sidebar-nav">
+            <li>
+                <button class="sidebar-nav-link active" data-page="overview" onclick="switchPage('overview')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Overview
+                </button>
+            </li>
+            <li>
+                <button class="sidebar-nav-link" data-page="manual" onclick="switchPage('manual')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Live Tester
+                </button>
+            </li>
+        </ul>
+
+        <div class="sidebar-bottom">
+            <ul class="sidebar-nav">
+                <li>
+                    <button class="sidebar-nav-link" data-page="settings" onclick="switchPage('settings')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Settings
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <main class="main-area">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 class="topbar-title" id="topbar-title">Overview</h1>
+            </div>
+            <div class="topbar-right">
                 <div class="status-pill">
                     <span class="status-dot"></span>
                     <span>Ensemble Active</span>
                 </div>
-            </div>
-        </header>
-
-        <!-- ===== NAVIGATION ===== -->
-        <div class="nav-segments">
-            <button class="nav-btn active" id="tab-csv-btn" onclick="switchTab('csv')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 5px; vertical-align: -2px;">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                </svg>
-                CSV Diagnostics
-            </button>
-            <button class="nav-btn" id="tab-manual-btn" onclick="switchTab('manual')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 5px; vertical-align: -2px;">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-                Live Parameter Tester
-            </button>
-        </div>
-
-        <!-- ===== TAB 1: CSV DIAGNOSTICS ===== -->
-        <div id="tab-csv-content">
-            <div class="card fade-in">
-                <div class="upload-box" id="drop-zone">
-                    <div class="upload-icon-wrapper">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+                    <div class="theme-toggle-thumb">
+                        <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                         </svg>
                     </div>
-                    <div class="upload-title">Drop raw Simulink CSV here or browse</div>
-                    <div class="upload-hint">Expects Load Voltage and Load Current channels • Sliding window feature extraction</div>
+                </div>
+                <button class="btn-export" onclick="exportResults()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export
+                </button>
+            </div>
+        </div>
 
-                    <input type="file" id="file-input" class="file-input" accept=".csv" onchange="handleFileSelect(event)" style="display:none;">
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            Select CSV File
-                        </button>
-                        <button class="btn btn-secondary" onclick="generateAndUploadSampleCSV()">
+        <!-- Page Content -->
+        <div class="page-content">
+
+            <!-- ============================
+                 PAGE: OVERVIEW
+                 ============================ -->
+            <div class="page-section active" id="page-overview">
+                <!-- Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-card-icon">
+                            <div class="stat-card-icon-circle">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                            </div>
+                            <span class="stat-card-label">Model Status</span>
+                        </div>
+                        <div class="stat-card-value" id="ov-model-status">Ready</div>
+                        <div class="stat-card-sub">Stacking Ensemble loaded</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">
+                            <div class="stat-card-icon-circle" style="background: var(--healthy-bg); color: var(--healthy);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                            </div>
+                            <span class="stat-card-label">Health Index</span>
+                        </div>
+                        <div class="stat-card-value" id="ov-health">—</div>
+                        <div class="stat-card-change positive" id="ov-health-change" style="display:none;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                            <span id="ov-health-change-text"></span>
+                        </div>
+                        <div class="stat-card-sub">from last analysis</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">
+                            <div class="stat-card-icon-circle" style="background: var(--esr-mild-bg); color: var(--esr-mild);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg>
+                            </div>
+                            <span class="stat-card-label">Windows Analyzed</span>
+                        </div>
+                        <div class="stat-card-value" id="ov-windows">0</div>
+                        <div class="stat-card-sub">total sliding windows</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">
+                            <div class="stat-card-icon-circle" style="background: var(--switch-deg-bg); color: var(--switch-deg);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                            </div>
+                            <span class="stat-card-label">Fault Classes</span>
+                        </div>
+                        <div class="stat-card-value">5</div>
+                        <div class="stat-card-sub">Healthy + 4 degradation</div>
+                    </div>
+                </div>
+
+                <!-- CSV Telemetry Ingestion / Upload Area -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header" style="margin-bottom: 0.5rem;">
+                        <div>
+                            <div class="card-title">Telemetry CSV Ingestion</div>
+                            <div class="card-subtitle">Upload converter time-series data for automated diagnosis & health scoring</div>
+                        </div>
+                        <div id="ov-file-indicator" style="display: none; align-items: center; gap: 0.5rem;">
+                            <span class="badge badge-Healthy" id="ov-file-badge">file.csv</span>
+                        </div>
+                    </div>
+                    <div class="upload-box" id="drop-zone" style="padding: 2.25rem 1.5rem;">
+                        <div class="upload-icon-wrap">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+                        <div class="upload-title">Drop raw Simulink CSV here or browse</div>
+                        <div class="upload-hint">Expects Load Voltage and Load Current channels • Sliding window feature extraction & ensemble prediction</div>
+
+                        <input type="file" id="file-input" accept=".csv" onchange="handleFileSelect(event)" style="display:none;">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                Select CSV File
+                            </button>
+                            <button class="btn btn-secondary" onclick="generateAndUploadSampleCSV()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                Run Demo Sample
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart + Ring row -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Fault Distribution</div>
+                                <div class="card-subtitle" id="ov-dist-sub">Upload CSV to see distribution</div>
+                            </div>
+                            <button class="card-menu-dots">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+                            </button>
+                        </div>
+                        <div class="chart-area">
+                            <canvas id="overviewBarChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Health Score</div>
+                                <div class="card-subtitle">Target: 100% healthy</div>
+                            </div>
+                        </div>
+                        <div class="ring-metric">
+                            <svg class="ring-svg" viewBox="0 0 120 120">
+                                <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+                                <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"
+                                    stroke-dasharray="326.73"
+                                    stroke-dashoffset="326.73"></circle>
+                            </svg>
+                            <div class="ring-label">
+                                <div class="ring-label-value" id="ring-value">—</div>
+                                <div class="ring-label-text">Health Score</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1.5rem;" id="ring-metrics-list">
+                            <!-- filled by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom row: Bar + Table -->
+                <div class="grid-2-equal">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Class Confidence</div>
+                                <div class="card-subtitle">Ensemble probability per class</div>
+                            </div>
+                            <button class="card-menu-dots">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+                            </button>
+                        </div>
+                        <div class="chart-area">
+                            <canvas id="overviewConfChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Recent Results</div>
+                                <div class="card-subtitle">Latest window classifications</div>
+                            </div>
+                            <button class="card-menu-dots">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+                            </button>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Windows</th>
+                                        <th>Proportion</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ov-results-tbody">
+                                    <tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 2rem;">No data yet — upload a CSV to begin</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnostics Output -->
+                <div class="card" id="csv-results-card" style="display: none; margin-top: 1.5rem;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Analysis Summary & Timeline</div>
+                            <div class="card-subtitle" id="res-filename">file.csv</div>
+                        </div>
+                        <div>
+                            <span id="dominant-badge" class="badge badge-lg badge-Healthy">Healthy</span>
+                        </div>
+                    </div>
+
+                    <div class="stats-row" style="margin-bottom: 1.25rem;">
+                        <div class="stat-card">
+                            <div class="stat-card-label">Diagnosis</div>
+                            <div class="stat-card-value" id="dominant-text" style="font-size: 1.1rem; color: var(--text-primary); margin-top: 0.25rem;">Healthy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Health Index</div>
+                            <div class="stat-card-value" id="health-index-val">100.0%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Windows</div>
+                            <div class="stat-card-value" id="res-windows">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Samples</div>
+                            <div class="stat-card-value" id="res-rows">0</div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider">
+                        <div class="section-divider-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                            State Transition Timeline
+                        </div>
+                    </div>
+                    <div class="card-subtitle" style="margin-bottom: 0.5rem;">Sliding window sequence across simulation duration</div>
+                    <div class="chart-area" style="height: 280px;">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+
+                    <div class="section-divider">
+                        <div class="section-divider-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                            Fault Distribution Breakdown
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>State Category</th>
+                                    <th>Windows</th>
+                                    <th>Proportion</th>
+                                    <th style="width: 40%;">Distribution</th>
+                                </tr>
+                            </thead>
+                            <tbody id="breakdown-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================
+                 PAGE: LIVE PARAMETER TESTER
+                 ============================ -->
+            <div class="page-section" id="page-manual">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Feature Parameter Adjuster</div>
+                            <div class="card-subtitle">Simulate single-window feature vectors and evaluate immediate ensemble classification</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="runManualPrediction()">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            Run Demo Sample
+                            Evaluate Sample
                         </button>
                     </div>
+
+                    <div class="slider-grid" id="manual-sliders"></div>
+
+                    <div class="single-result" id="manual-results-card" style="display: none;">
+                        <div>
+                            <span id="manual-badge" class="badge badge-lg badge-Healthy">Healthy</span>
+                            <div class="single-meta">Confidence: <strong id="manual-conf">95.0%</strong></div>
+                        </div>
+                        <div id="manual-extra" style="font-size: 0.75rem; color: var(--text-muted); text-align: right;">
+                            Ensemble: Majority Vote & Weighted Blend
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Diagnostics Output -->
-            <div class="card" id="csv-results-card" style="display: none;">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">Analysis Summary</div>
-                        <div class="card-desc" id="res-filename">file.csv</div>
+            <!-- ============================
+                 PAGE: SETTINGS
+                 ============================ -->
+            <div class="page-section" id="page-settings">
+                <div class="card settings-section">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Appearance</div>
+                            <div class="card-subtitle">Customize the dashboard look and feel</div>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-row-label">Dark Mode</div>
+                            <div class="settings-row-desc">Toggle between dark and light themes</div>
+                        </div>
+                        <div class="toggle-switch" id="settings-dark-toggle" onclick="toggleTheme()">
+                            <div class="toggle-switch-thumb"></div>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-row-label">Auto-scroll to Results</div>
+                            <div class="settings-row-desc">Automatically scroll to results after analysis</div>
+                        </div>
+                        <div class="toggle-switch active" id="settings-autoscroll" onclick="this.classList.toggle('active')">
+                            <div class="toggle-switch-thumb"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Diagnosis</div>
-                        <span id="dominant-badge" class="badge badge-lg badge-Healthy">Healthy</span>
+                <div class="card settings-section" style="margin-top: 1.5rem;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Model Information</div>
+                            <div class="card-subtitle">Current ensemble configuration</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Health Index</div>
-                        <div class="stat-value" id="health-index-val">100.0%</div>
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-row-label">Architecture</div>
+                            <div class="settings-row-desc">Hybrid Stacking Ensemble (Logistic Regression + Calibrated Linear SVC + Regularized RF + XGBoost)</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Windows</div>
-                        <div class="stat-value" id="res-windows">0</div>
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-row-label">Ensemble Decision Logic</div>
+                            <div class="settings-row-desc">Majority vote for classification; confidence score via probability blend with 2× weight on linear models</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Samples</div>
-                        <div class="stat-value" id="res-rows">0</div>
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-row-label">Feature Count</div>
+                            <div class="settings-row-desc">13 features (8 raw + 5 engineered)</div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="section-divider">
-                    <div class="section-divider-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                        State Transition Timeline
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-row-label">Window Size</div>
+                            <div class="settings-row-desc">50 samples per sliding window</div>
+                        </div>
                     </div>
-                </div>
-                <div class="card-desc" style="margin-bottom: 0.5rem;">Sliding window sequence across simulation duration</div>
-                <div class="chart-box">
-                    <canvas id="timelineChart"></canvas>
-                </div>
-
-                <div class="section-divider">
-                    <div class="section-divider-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                        Fault Distribution Breakdown
-                    </div>
-                </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>State Category</th>
-                                <th>Windows</th>
-                                <th>Proportion</th>
-                                <th style="width: 40%;">Distribution</th>
-                            </tr>
-                        </thead>
-                        <tbody id="breakdown-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== TAB 2: LIVE PARAMETER TESTER ===== -->
-        <div id="tab-manual-content" style="display: none;">
-            <div class="card fade-in">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">Feature Parameter Adjuster</div>
-                        <div class="card-desc">Simulate single-window feature vectors and evaluate immediate ensemble classification</div>
-                    </div>
-                    <button class="btn btn-primary" onclick="runManualPrediction()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                        Evaluate Sample
-                    </button>
-                </div>
-
-                <div class="slider-grid" id="manual-sliders"></div>
-
-                <div class="single-result" id="manual-results-card" style="display: none;">
-                    <div>
-                        <span id="manual-badge" class="badge badge-lg badge-Healthy">Healthy</span>
-                        <div class="single-meta">Confidence: <strong id="manual-conf">95.0%</strong></div>
-                    </div>
-                    <div id="manual-extra" style="font-size: 0.75rem; color: var(--text-muted); text-align: right;">
-                        Meta-Learner: Calibrated Logistic Regression
+                    <div class="settings-row">
+                        <div>
+                            <div class="settings-row-label">Output Classes</div>
+                            <div class="settings-row-desc">Healthy, ESR Mild, ESR Severe, Switch Deg, Gate Deg</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ===== FOOTER ===== -->
-        <footer>
-            <div class="footer-stack">
-                <span>Converter Diagnostics v2.0</span>
-                <span class="footer-dot"></span>
-                <span>Stacking Ensemble ML</span>
-            </div>
-            <div class="footer-stack">
-                <span>QDA + Quad SVM + RF + XGBoost → Logistic Regression</span>
-            </div>
-        </footer>
-    </div>
+        </div><!-- /page-content -->
+    </main>
 
     <script>
+        /* ==========================================================
+           STATE
+           ========================================================== */
         let timelineChartInstance = null;
+        let overviewBarChartInstance = null;
+        let overviewConfChartInstance = null;
+        let lastAnalysisData = null;
+
         let manualFeatures = {
             "V_mean": 24.0, "V_std": 0.05, "V_rms": 24.0, "V_p2p": 0.15,
             "I_mean": 2.0, "I_std": 0.02, "I_rms": 2.0, "I_p2p": 0.05
@@ -1111,7 +1789,94 @@
             "I_p2p": { min: 0, max: 5, step: 0.02, label: "I Peak-to-Peak (A)", icon: "🔋" }
         };
 
-        // ---- Toast System ----
+        const classColors = {
+            'Healthy':     { color: 'var(--healthy)',    bg: 'var(--healthy-bg)' },
+            'ESR Mild':    { color: 'var(--esr-mild)',   bg: 'var(--esr-mild-bg)' },
+            'ESR Severe':  { color: 'var(--esr-severe)', bg: 'var(--esr-severe-bg)' },
+            'Switch Deg':  { color: 'var(--switch-deg)', bg: 'var(--switch-deg-bg)' },
+            'Gate Deg':    { color: 'var(--gate-deg)',   bg: 'var(--gate-deg-bg)' }
+        };
+
+        /* ==========================================================
+           THEME
+           ========================================================== */
+        function getTheme() {
+            return document.documentElement.getAttribute('data-theme') || 'dark';
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('converter-dx-theme', theme);
+            const moonIcon = document.getElementById('theme-icon-moon');
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const settingsToggle = document.getElementById('settings-dark-toggle');
+
+            if (theme === 'dark') {
+                moonIcon.style.display = '';
+                sunIcon.style.display = 'none';
+                settingsToggle?.classList.add('active');
+            } else {
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = '';
+                settingsToggle?.classList.remove('active');
+            }
+
+            // Redraw charts with updated theme colors
+            if (lastAnalysisData) {
+                updateOverviewCharts(lastAnalysisData);
+            }
+        }
+
+        function toggleTheme() {
+            setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+        }
+
+        // Init theme from storage
+        (function() {
+            const saved = localStorage.getItem('converter-dx-theme');
+            if (saved) setTheme(saved);
+        })();
+
+        /* ==========================================================
+           SIDEBAR / PAGE SWITCHING
+           ========================================================== */
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('open');
+        }
+
+        function switchPage(page) {
+            // Update sidebar links
+            document.querySelectorAll('.sidebar-nav-link').forEach(el => {
+                el.classList.toggle('active', el.dataset.page === page);
+            });
+
+            // Show correct page section
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            const target = document.getElementById(`page-${page}`);
+            if (target) target.classList.add('active');
+
+            // Update topbar title
+            const titles = {
+                overview: 'Overview',
+                manual: 'Live Parameter Tester',
+                settings: 'Settings'
+            };
+            document.getElementById('topbar-title').textContent = titles[page] || page;
+
+            // Render sliders when switching to manual
+            if (page === 'manual') renderManualSliders();
+
+            // Close mobile sidebar
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.remove('open');
+        }
+
+        /* ==========================================================
+           TOAST
+           ========================================================== */
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').textContent = message;
@@ -1120,7 +1885,9 @@
             setTimeout(() => toast.classList.remove('visible'), 3500);
         }
 
-        // ---- Loading Overlay ----
+        /* ==========================================================
+           LOADING OVERLAY
+           ========================================================== */
         function showLoading(msg = 'Analyzing telemetry data...') {
             const overlay = document.getElementById('loading-overlay');
             overlay.querySelector('.loading-text').textContent = msg;
@@ -1131,21 +1898,9 @@
             document.getElementById('loading-overlay').classList.remove('visible');
         }
 
-        // ---- Tab Switching ----
-        function switchTab(mode) {
-            document.getElementById('tab-csv-btn').classList.toggle('active', mode === 'csv');
-            document.getElementById('tab-manual-btn').classList.toggle('active', mode === 'manual');
-
-            const csvContent = document.getElementById('tab-csv-content');
-            const manualContent = document.getElementById('tab-manual-content');
-
-            csvContent.style.display = mode === 'csv' ? 'block' : 'none';
-            manualContent.style.display = mode === 'manual' ? 'block' : 'none';
-
-            if (mode === 'manual') renderManualSliders();
-        }
-
-        // ---- Drag & Drop ----
+        /* ==========================================================
+           DRAG & DROP
+           ========================================================== */
         const dropZone = document.getElementById('drop-zone');
         ['dragenter', 'dragover'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
         ['dragleave', 'drop'].forEach(n => dropZone.addEventListener(n, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
@@ -1155,11 +1910,20 @@
             if (files.length > 0) uploadCSVFile(files[0]);
         });
 
+        dropZone.addEventListener('click', (e) => {
+            if (!e.target.closest('button')) {
+                document.getElementById('file-input').click();
+            }
+        });
+
         function handleFileSelect(e) {
             const files = e.target.files;
             if (files.length > 0) uploadCSVFile(files[0]);
         }
 
+        /* ==========================================================
+           CSV UPLOAD & RESULTS
+           ========================================================== */
         async function uploadCSVFile(file) {
             showLoading('Processing ' + file.name + '...');
             const formData = new FormData();
@@ -1174,7 +1938,9 @@
                     return;
                 }
                 const data = await res.json();
+                lastAnalysisData = data;
                 renderCSVResults(data);
+                updateOverviewFromCSV(data);
                 showToast('Analysis complete — ' + data.total_windows + ' windows processed');
             } catch (e) {
                 hideLoading();
@@ -1188,14 +1954,11 @@
                 const time = (i * 0.0001).toFixed(5);
                 let current = (2.0 + Math.random() * 0.04).toFixed(3);
                 let voltage = (24.0 + Math.random() * 0.1).toFixed(3);
-
-                // Add an ESR Severe ripple anomaly in second half
                 if (i > 1200) {
                     voltage = (24.0 + (Math.random() * 4.0 - 2.0)).toFixed(3);
                 }
                 csvContent += `${time},${current},${voltage}\n`;
             }
-
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const sampleFile = new File([blob], "demo_converter_run.csv", { type: "text/csv" });
             uploadCSVFile(sampleFile);
@@ -1204,7 +1967,6 @@
         function renderCSVResults(data) {
             const resultsCard = document.getElementById('csv-results-card');
             resultsCard.style.display = 'block';
-            resultsCard.classList.add('fade-in');
 
             document.getElementById('res-filename').innerText = data.filename;
             document.getElementById('res-rows').innerText = data.total_rows.toLocaleString();
@@ -1213,15 +1975,27 @@
 
             const domBadge = document.getElementById('dominant-badge');
             const cleanName = data.majority_fault_label.replace(/\s+/g, '-');
-            domBadge.className = `badge badge-lg badge-${cleanName}`;
-            domBadge.innerText = data.majority_fault_label;
+            if (domBadge) {
+                domBadge.className = `badge badge-lg badge-${cleanName}`;
+                domBadge.innerText = data.majority_fault_label;
+            }
+
+            const domText = document.getElementById('dominant-text');
+            if (domText) domText.innerText = data.majority_fault_label;
+
+            const fileBadge = document.getElementById('ov-file-badge');
+            if (fileBadge) {
+                fileBadge.className = `badge badge-${cleanName}`;
+                fileBadge.textContent = `${data.filename} (${data.total_windows} windows)`;
+                const fileIndicator = document.getElementById('ov-file-indicator');
+                if (fileIndicator) fileIndicator.style.display = 'flex';
+            }
 
             // Breakdown Table
             const tbody = document.getElementById('breakdown-tbody');
             tbody.innerHTML = '';
             data.breakdown.forEach((item, idx) => {
                 const tr = document.createElement('tr');
-                tr.style.animationDelay = `${idx * 0.06}s`;
                 tr.innerHTML = `
                     <td><strong>${item.class_name}</strong></td>
                     <td>${item.count.toLocaleString()}</td>
@@ -1233,8 +2007,6 @@
                     </td>
                 `;
                 tbody.appendChild(tr);
-
-                // Animate the progress bar
                 requestAnimationFrame(() => {
                     setTimeout(() => {
                         tr.querySelector('.progress-bar-fill').style.width = `${item.percentage}%`;
@@ -1243,26 +2015,43 @@
             });
 
             renderTimelineChart(data.timeline);
-            resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            const shouldAutoScroll = document.getElementById('settings-autoscroll')?.classList.contains('active');
+            if (shouldAutoScroll) {
+                resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        /* ==========================================================
+           TIMELINE CHART
+           ========================================================== */
+        function getChartColors() {
+            const isDark = getTheme() === 'dark';
+            return {
+                gridColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)',
+                tickColor: isDark ? '#5a6478' : '#9098ab',
+                tooltipBg: isDark ? 'rgba(20,27,45,0.95)' : 'rgba(255,255,255,0.95)',
+                tooltipBorder: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+                tooltipTitleColor: isDark ? '#8b95a8' : '#5f6880',
+                tooltipBodyColor: isDark ? '#e8edf5' : '#1a1d2e',
+            };
         }
 
         function renderTimelineChart(timeline) {
             const ctx = document.getElementById('timelineChart').getContext('2d');
             if (timelineChartInstance) timelineChartInstance.destroy();
+            const colors = getChartColors();
 
             const labels = timeline.map(t => `#${t.window}`);
             const values = timeline.map(t => t.predicted_class_id);
 
-            // Color mapping for each fault class
-            const classColors = {
-                0: 'rgba(52, 211, 153, 0.8)',  // Healthy
-                1: 'rgba(251, 191, 36, 0.8)',   // ESR Mild
-                2: 'rgba(248, 113, 113, 0.8)',  // ESR Severe
-                3: 'rgba(167, 139, 250, 0.8)',  // Switch Deg
-                4: 'rgba(34, 211, 238, 0.8)'    // Gate Deg
+            const classColorsChart = {
+                0: 'rgba(52,211,153,0.8)',
+                1: 'rgba(251,191,36,0.8)',
+                2: 'rgba(248,113,113,0.8)',
+                3: 'rgba(167,139,250,0.8)',
+                4: 'rgba(34,211,238,0.8)'
             };
-
-            const pointColors = values.map(v => classColors[v] || 'rgba(96, 165, 250, 0.8)');
 
             timelineChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -1270,14 +2059,14 @@
                     labels: labels,
                     datasets: [{
                         data: values,
-                        borderColor: 'rgba(96, 165, 250, 0.5)',
+                        borderColor: 'rgba(108,99,255,0.5)',
                         backgroundColor: function(context) {
                             const chart = context.chart;
                             const {ctx: c, chartArea} = chart;
                             if (!chartArea) return 'transparent';
                             const gradient = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-                            gradient.addColorStop(0, 'rgba(96, 165, 250, 0.12)');
-                            gradient.addColorStop(1, 'rgba(96, 165, 250, 0.0)');
+                            gradient.addColorStop(0, 'rgba(108,99,255,0.12)');
+                            gradient.addColorStop(1, 'rgba(108,99,255,0.0)');
                             return gradient;
                         },
                         borderWidth: 2,
@@ -1285,7 +2074,7 @@
                         stepped: true,
                         pointRadius: 0,
                         pointHoverRadius: 5,
-                        pointHoverBackgroundColor: '#60a5fa',
+                        pointHoverBackgroundColor: '#6c63ff',
                         pointHoverBorderColor: '#ffffff',
                         pointHoverBorderWidth: 2,
                         tension: 0
@@ -1294,33 +2083,23 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
+                    interaction: { mode: 'index', intersect: false },
                     scales: {
                         y: {
-                            min: 0,
-                            max: 4,
+                            min: 0, max: 4,
                             ticks: {
                                 stepSize: 1,
-                                color: '#5a6478',
+                                color: colors.tickColor,
                                 font: { family: 'Inter', size: 10, weight: 500 },
-                                callback: function(val) {
-                                    const names = ["Healthy", "ESR Mild", "ESR Severe", "Switch Deg", "Gate Deg"];
-                                    return names[val] || val;
-                                },
+                                callback: v => ["Healthy","ESR Mild","ESR Severe","Switch Deg","Gate Deg"][v] || v,
                                 padding: 8
                             },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.04)',
-                                drawBorder: false
-                            },
+                            grid: { color: colors.gridColor, drawBorder: false },
                             border: { display: false }
                         },
                         x: {
                             ticks: {
-                                color: '#5a6478',
+                                color: colors.tickColor,
                                 maxTicksLimit: 12,
                                 font: { family: 'JetBrains Mono', size: 10 },
                                 padding: 6
@@ -1332,21 +2111,18 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(20, 27, 45, 0.95)',
-                            borderColor: 'rgba(255, 255, 255, 0.08)',
+                            backgroundColor: colors.tooltipBg,
+                            borderColor: colors.tooltipBorder,
                             borderWidth: 1,
-                            titleColor: '#8b95a8',
-                            bodyColor: '#e8edf5',
+                            titleColor: colors.tooltipTitleColor,
+                            bodyColor: colors.tooltipBodyColor,
                             titleFont: { family: 'Inter', size: 11 },
                             bodyFont: { family: 'JetBrains Mono', size: 12, weight: 600 },
                             padding: 12,
                             cornerRadius: 8,
                             displayColors: false,
                             callbacks: {
-                                label: function(ctx) {
-                                    const names = ["Healthy", "ESR Mild", "ESR Severe", "Switch Deg", "Gate Deg"];
-                                    return ` Diagnosis: ${names[ctx.raw] || ctx.raw}`;
-                                }
+                                label: ctx => ` Diagnosis: ${["Healthy","ESR Mild","ESR Severe","Switch Deg","Gate Deg"][ctx.raw] || ctx.raw}`
                             }
                         }
                     }
@@ -1354,17 +2130,182 @@
             });
         }
 
+        /* ==========================================================
+           OVERVIEW PAGE UPDATES
+           ========================================================== */
+        function updateOverviewFromCSV(data) {
+            // Update stat cards
+            document.getElementById('ov-health').textContent = `${data.overall_health_index.toFixed(1)}%`;
+            document.getElementById('ov-windows').textContent = data.total_windows.toLocaleString();
+            document.getElementById('ov-dist-sub').textContent = `${data.filename} • ${data.total_windows} windows`;
+
+            // Health ring
+            const ringFill = document.getElementById('ring-fill');
+            const circumference = 326.73;
+            const offset = circumference - (data.overall_health_index / 100) * circumference;
+            ringFill.style.strokeDashoffset = offset;
+            document.getElementById('ring-value').textContent = `${data.overall_health_index.toFixed(0)}%`;
+
+            // Ring metrics list
+            const metricsListEl = document.getElementById('ring-metrics-list');
+            metricsListEl.innerHTML = '';
+            data.breakdown.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'metric-row';
+                row.innerHTML = `
+                    <span class="metric-row-label">${item.class_name}</span>
+                    <div class="metric-row-right">
+                        <span class="metric-row-value">${item.count}</span>
+                        <div class="metric-bar-wrap">
+                            <div class="metric-bar-fill" style="width: ${item.percentage}%;"></div>
+                        </div>
+                        <span class="metric-bar-pct">${item.percentage.toFixed(0)}%</span>
+                    </div>
+                `;
+                metricsListEl.appendChild(row);
+            });
+
+            // Results table
+            const tbody = document.getElementById('ov-results-tbody');
+            tbody.innerHTML = '';
+            data.breakdown.forEach(item => {
+                const healthScore = {0:100, 1:75, 2:20, 3:40, 4:55}[item.class_id] || 0;
+                const cleanName = item.class_name.replace(/\s+/g, '-');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="badge badge-${cleanName}">${item.class_name}</span></td>
+                    <td>${item.count}</td>
+                    <td>${item.percentage.toFixed(1)}%</td>
+                    <td><strong>${healthScore}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateOverviewCharts(data);
+        }
+
+        function updateOverviewCharts(data) {
+            const colors = getChartColors();
+            const isDark = getTheme() === 'dark';
+
+            // Bar chart – fault distribution
+            const barCtx = document.getElementById('overviewBarChart').getContext('2d');
+            if (overviewBarChartInstance) overviewBarChartInstance.destroy();
+
+            const barColors = [
+                isDark ? 'rgba(52,211,153,0.7)' : 'rgba(5,150,105,0.7)',
+                isDark ? 'rgba(251,191,36,0.7)' : 'rgba(217,119,6,0.7)',
+                isDark ? 'rgba(248,113,113,0.7)' : 'rgba(220,38,38,0.7)',
+                isDark ? 'rgba(167,139,250,0.7)' : 'rgba(124,58,237,0.7)',
+                isDark ? 'rgba(34,211,238,0.7)' : 'rgba(8,145,178,0.7)',
+            ];
+
+            overviewBarChartInstance = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.breakdown.map(b => b.class_name),
+                    datasets: [{
+                        data: data.breakdown.map(b => b.count),
+                        backgroundColor: barColors,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.55,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 8 },
+                            grid: { color: colors.gridColor, drawBorder: false },
+                            border: { display: false }
+                        },
+                        x: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 6 },
+                            grid: { display: false },
+                            border: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: colors.tooltipBg,
+                            borderColor: colors.tooltipBorder,
+                            borderWidth: 1,
+                            titleColor: colors.tooltipTitleColor,
+                            bodyColor: colors.tooltipBodyColor,
+                            padding: 10,
+                            cornerRadius: 8,
+                        }
+                    }
+                }
+            });
+
+            // Confidence stacked bar chart
+            const confCtx = document.getElementById('overviewConfChart').getContext('2d');
+            if (overviewConfChartInstance) overviewConfChartInstance.destroy();
+
+            overviewConfChartInstance = new Chart(confCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.breakdown.map(b => b.class_name),
+                    datasets: [{
+                        label: 'Percentage',
+                        data: data.breakdown.map(b => b.percentage),
+                        backgroundColor: barColors,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.55,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 6, callback: v => v + '%' },
+                            grid: { color: colors.gridColor, drawBorder: false },
+                            border: { display: false },
+                            max: 100
+                        },
+                        y: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 8 },
+                            grid: { display: false },
+                            border: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: colors.tooltipBg,
+                            borderColor: colors.tooltipBorder,
+                            borderWidth: 1,
+                            titleColor: colors.tooltipTitleColor,
+                            bodyColor: colors.tooltipBodyColor,
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: ctx => ` ${ctx.raw.toFixed(1)}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* ==========================================================
+           MANUAL SLIDERS / PREDICTION
+           ========================================================== */
         function renderManualSliders() {
             const container = document.getElementById('manual-sliders');
             container.innerHTML = '';
             Object.keys(featureLimits).forEach((key, idx) => {
                 const meta = featureLimits[key];
                 const val = manualFeatures[key] !== undefined ? manualFeatures[key] : meta.min;
-
                 const wrapper = document.createElement('div');
                 wrapper.className = 'control-group';
-                wrapper.style.animationDelay = `${idx * 0.05}s`;
-                wrapper.classList.add('fade-in');
                 wrapper.innerHTML = `
                     <div class="control-header">
                         <span class="control-label">${meta.icon} ${meta.label}</span>
@@ -1406,7 +2347,6 @@
 
                 const resultCard = document.getElementById('manual-results-card');
                 resultCard.style.display = 'flex';
-                resultCard.classList.add('fade-in');
 
                 const badge = document.getElementById('manual-badge');
                 const cleanName = data.predicted_label.replace(/\s+/g, '-');
@@ -1420,6 +2360,115 @@
                 showToast("Prediction request failed.", true);
             }
         }
+
+        /* ==========================================================
+           EXPORT
+           ========================================================== */
+        function exportResults() {
+            if (!lastAnalysisData) {
+                showToast('No analysis data to export. Upload a CSV first.', true);
+                return;
+            }
+            const blob = new Blob([JSON.stringify(lastAnalysisData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `diagnosis_${lastAnalysisData.filename || 'results'}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Results exported successfully');
+        }
+
+        /* ==========================================================
+           INIT OVERVIEW CHARTS (empty)
+           ========================================================== */
+        function initEmptyOverviewCharts() {
+            const colors = getChartColors();
+            const isDark = getTheme() === 'dark';
+
+            // Empty bar chart
+            const barCtx = document.getElementById('overviewBarChart').getContext('2d');
+            overviewBarChartInstance = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Healthy', 'ESR Mild', 'ESR Severe', 'Switch Deg', 'Gate Deg'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            isDark ? 'rgba(52,211,153,0.3)' : 'rgba(5,150,105,0.3)',
+                            isDark ? 'rgba(251,191,36,0.3)' : 'rgba(217,119,6,0.3)',
+                            isDark ? 'rgba(248,113,113,0.3)' : 'rgba(220,38,38,0.3)',
+                            isDark ? 'rgba(167,139,250,0.3)' : 'rgba(124,58,237,0.3)',
+                            isDark ? 'rgba(34,211,238,0.3)' : 'rgba(8,145,178,0.3)',
+                        ],
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.55,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 8 },
+                            grid: { color: colors.gridColor, drawBorder: false },
+                            border: { display: false }
+                        },
+                        x: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 6 },
+                            grid: { display: false },
+                            border: { display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Empty horizontal bar
+            const confCtx = document.getElementById('overviewConfChart').getContext('2d');
+            overviewConfChartInstance = new Chart(confCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Healthy', 'ESR Mild', 'ESR Severe', 'Switch Deg', 'Gate Deg'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            isDark ? 'rgba(52,211,153,0.3)' : 'rgba(5,150,105,0.3)',
+                            isDark ? 'rgba(251,191,36,0.3)' : 'rgba(217,119,6,0.3)',
+                            isDark ? 'rgba(248,113,113,0.3)' : 'rgba(220,38,38,0.3)',
+                            isDark ? 'rgba(167,139,250,0.3)' : 'rgba(124,58,237,0.3)',
+                            isDark ? 'rgba(34,211,238,0.3)' : 'rgba(8,145,178,0.3)',
+                        ],
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.55,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 6, callback: v => v + '%' },
+                            grid: { color: colors.gridColor, drawBorder: false },
+                            border: { display: false },
+                            max: 100
+                        },
+                        y: {
+                            ticks: { color: colors.tickColor, font: { family: 'Inter', size: 10 }, padding: 8 },
+                            grid: { display: false },
+                            border: { display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // Boot
+        initEmptyOverviewCharts();
     </script>
 </body>
 </html>

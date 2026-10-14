@@ -1,6 +1,6 @@
 """
 Training and Evaluation Pipeline for Fault Prediction in DC-DC Buck-Boost Converters.
-Primary Architecture: Hybrid 1 - Stacking Ensemble (QDA + Quadratic SVM + RF + XGBoost -> Logistic Regression).
+Primary Architecture: Hybrid 1 - Stacking Ensemble (Linear Margin SVM + Multiclass LR + Regularized RF + XGBoost).
 """
 
 import os

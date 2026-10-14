@@ -123,22 +123,16 @@ class HybridStackingEnsemble(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X):
-        preds = np.column_stack([
-            self.lr.predict(X),
-            self.cal_svc.predict(X),
-            self.rf.predict(X),
-            self.xgb.predict(X)
-        ])
-        majority, _ = mode(preds, axis=1)
-        return majority.ravel()
+        # Fast vectorised soft-voting consensus (eliminates tie bias towards class 0)
+        return np.argmax(self.predict_proba(X), axis=1)
 
     def predict_proba(self, X):
         p_lr = self.lr.predict_proba(X)
         p_svc = self.cal_svc.predict_proba(X)
         p_rf = self.rf.predict_proba(X)
         p_xgb = self.xgb.predict_proba(X)
-        # Weighted probability mixture: 2x weight to physically-stable linear models
-        blended = (p_lr * 2.0 + p_svc * 2.0 + p_rf + p_xgb) / 6.0
+        # Balanced consensus probability mixture across linear models and tree ensembles
+        blended = (p_lr + p_svc + p_rf + p_xgb) / 4.0
         return blended
 
 
